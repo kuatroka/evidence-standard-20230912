@@ -1,12 +1,12 @@
 
-```cik_quarters_table
-from every_cik_qtr
-select cik_name, quarter, quarter_end_date, value_usd, num_assets AS num_assets_num0,
-prc_change_value AS prc_change_value_pct, prc_change_num_assets AS prc_change_num_assets_pct,
-prev_quarter
-where cik = '${$page.params.superinvestor}'
-order by quarter desc
-```
+<!-- -- ```cik_quarters_table
+-- from every_cik_qtr
+-- select cik_name, quarter, quarter_end_date, value_usd, num_assets AS num_assets_num0,
+-- prc_change_value AS prc_change_value_pct, prc_change_num_assets AS prc_change_num_assets_pct,
+-- prev_quarter
+-- where cik = '${$page.params.superinvestor}'
+-- order by quarter desc
+-- ``` -->
 <!-- -- ```cik_quarters_table_filtered
 -- from every_cik_qtr
 -- select quarter, value_usd
@@ -14,12 +14,12 @@ order by quarter desc
 -- ``` -->
 
 
-```cik_max_min_quarter
-from every_cik_qtr
-select MAX(quarter) AS max_quarter, MIN(quarter) AS min_quarter
-where cik = '${$page.params.superinvestor}'
-group by all
-```
+<!-- -- ```cik_max_min_quarter
+-- from every_cik_qtr
+-- select MAX(quarter) AS max_quarter, MIN(quarter) AS min_quarter
+-- where cik = '${$page.params.superinvestor}'
+-- group by all
+-- ``` -->
 
 
 
@@ -35,28 +35,31 @@ group by all
 
 
 
-```cik_quarters_area
-from every_cik_qtr
-select cik_name, quarter, quarter_end_date, value_usd, num_assets AS num_assets_num0
-where cik = '${$page.params.superinvestor}'
-order by quarter asc
-```
+<!-- -- ```cik_quarters_area
+-- from every_cik_qtr
+-- select cik_name, quarter, quarter_end_date, value_usd, num_assets AS num_assets_num0
+-- where cik = '${$page.params.superinvestor}'
+-- order by quarter asc
+-- ``` -->
 
 <script>
-//  /** @type {import('./$types').PageData} */
-
-import { writable } from 'svelte/store';
-
-let quarters = cik_quarters_table.map(item => (item.quarter)).reverse();
-$: years_active = quarters.length/4;
-let inputYearQuaterStore = writable(quarters[quarters.length - 1]);
-$: inputYearQuater = $inputYearQuaterStore;
-$: inputYearQuaterStore.set(inputYearQuater)
+ /** @type {import('./$types').PageData} */
+let quarters = props.entries_get_every_cik_qtr_params.map(item => (item.quarter));
+$: inputYearQuater = quarters[quarters.length -1];
+let years_active = quarters.length/4;
 
 
-$: entries = props.entries.filter(d => d.quarter === $inputYearQuaterStore);
-$: quarter_filtered = cik_quarters_table.filter(d => d.quarter === $inputYearQuaterStore);
-$: prev_quarter = quarter_filtered.map(item => (item.prev_quarter))[0];
+let entries_get_every_cik_qtr_params = props.entries_get_every_cik_qtr_params;
+
+$: prev_quarter = entries_get_every_cik_qtr_params.map(item => (item.prev_quarter))[0];
+
+console.log(entries_get_every_cik_qtr_params);
+
+
+
+// $: entries = props.entries.filter(d => d.quarter === $inputYearQuaterStore);
+// $: quarter_filtered = cik_quarters_table.filter(d => d.quarter === $inputYearQuaterStore);
+// $: prev_quarter = quarter_filtered.map(item => (item.prev_quarter))[0];
 
 const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'
 const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
@@ -64,51 +67,50 @@ const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k
 
 </script>
 
-# <span style="color: goldenrod;">{cik_quarters_table[0].cik_name}</span>
+# <span style="color: goldenrod;">{entries_get_every_cik_qtr_params[0].cik_name}</span>
 ## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>**
 
 <LineChart
 title="Value($)"
-    data={cik_quarters_area}
+    data={entries_get_every_cik_qtr_params}
     x=quarter
     y=value_usd fmt={format_usd}
     yFmt={format_usd}>
-    <!-- <ReferenceArea xMin="2018Q4" xMax="2020Q4"/> -->
 </LineChart>
 
 ## Quarter: <span style="color: goldenrod;">{inputYearQuater}</span>
 <RangeInputYear {quarters} bind:quarterValue={inputYearQuater} />
 
-<!-- **TODO**:*Play with the color of the slider rail and the trail. Try the same color as the lineChart* -->
+**TODO**:*Play with the color of the slider rail and the trail. Try the same color as the lineChart*
 **TODO**:* 1 -Change the comparison from percentage change to actual change*
 
 
 
-<BigValue
-    data={quarter_filtered}
+<!-- <BigValue
+    data={entries_get_every_cik_qtr_params}
     title="Value($)"
     value=value_usd  
     fmt={format_usd}
-    comparison=prc_change_value_pct
+    comparison=prc_change_total_value_pct
     comparisonTitle="% Over {prev_quarter}"
-/>
+/> -->
 
-<BigValue
+<!-- <BigValue
     data={quarter_filtered}
     title="Assets"
     value=num_assets_num0   
     comparison=prc_change_num_assets_pct
     comparisonTitle="% Over {prev_quarter}"
-/> 
+/>  -->
 
-<BigValue
+<!-- <BigValue
     data={quarter_filtered}
     title="Placeholder: Synthetic P/L"
     value=num_assets_num0  
     fmt='#,##0'  
     comparison=prc_change_num_assets_pct
     omparisonTitle="% Over {prev_quarter}"
-/> 
+/>  -->
 
 <!-- <BigValue
     data={quarter_filtered}
@@ -120,8 +122,8 @@ title="Value($)"
 />  -->
 
 **TODO**:*To the table, add change of # shares from the prev quarter in percentages for each cusip *
-<Tabs>
-<Tab label="Table">
+<!-- <Tabs> -->
+<!-- <Tab label="Table">
 
 <DataTable data="{entries}" link="cusip" search="true" rows=9>
     <Column id="name"  title='Name'/>
@@ -130,11 +132,12 @@ title="Value($)"
     <Column id="shares" />
     <Column id="pct_pct" title='%' />  
 </DataTable>
-</Tab>
+</Tab> -->
 
 
-<Tabs/>
-<Tab label="Chart">
+<!-- <Tabs/> -->
+
+<!-- <Tab label="Chart">
 
 <ECharts config={
     {title: {
@@ -183,7 +186,7 @@ title="Value($)"
         ]
     }
 }/>
-    </Tab>
-</Tabs>
+</Tab> -->
+<!-- </Tabs> -->
 
 **TODO**:*Add more stats for individual superinvestor. Maybe the best and the worst trades...etc**

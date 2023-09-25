@@ -1,70 +1,75 @@
 <script>
-// $: last_reporting_date = cik_cusip_per_quarter[0].last_reporting_date
-let cik_cusip_per_quarter = props.entries_cik_cusip_per_quarter;
 
-let quarters = cik_cusip_per_quarter.map(item => (item.quarter)).reverse();
+let get_overview_per_quarter = props.entries_get_overview_per_quarter;
+let quarters = get_overview_per_quarter.map(item => (item.quarter)).reverse();
 $: inputYearQuater = quarters[quarters.length -1];
 
-// $: every_cik_every_qtr_filtered = props.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater);
-
-// $: prev_quarter = props.entries_every_cik_qtr.find(item => item.quarter === inputYearQuater)?.prev_quarter;
-
-$: entries = props.entries_every_cik_qtr;
-$: every_cik_every_qtr_filtered = entries.filter(item => item.quarter === inputYearQuater);
-$: prev_quarter = every_cik_every_qtr_filtered[0].prev_quarter;
-
-// $: cik_cusip_per_quarter = every_cik_every_qtr_filtered;
+$: every_cik_qtr_filtered = props.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater);
+$: prev_quarter = every_cik_qtr_filtered[0].prev_quarter;
 
 const [ total_quarters, 
         total_ciks,
-        last_reporting_date] = cik_cusip_per_quarter.map(q => [q.total_quarters, q.total_ciks, q.last_reporting_date])[0];
-
-
-
+        last_reporting_date] = get_overview_per_quarter.map(q => [q.total_quarters, q.total_ciks, q.last_reporting_date])[0];
 
 </script>
 
-<!-- {JSON.stringify(props.entries_cik_cusip_per_quarter[0].quarter,  null, 2)}  -->
 
-# **25** years Of 13F Filings
+<!-- {JSON.stringify(props.entries_get_overview_per_quarter[0].quarter,  null, 2)}  -->
+<div style="display: flex; justify-content: center;">
+    <Alert status="warning" open="true">
+    <Modal title="Data Quality Warning and Site's Purpose" buttonText="Important Statement About Data Quality and App's Purpose"> 
+    This app is in a **technical and functional** beta.
+    <br>
+    This site is for financial **investigation and research** only. Nothing here constitutes investment or any other kind of advice.
+    <br>
+    The US SEC doesn't enforce or check the quality of the submitted 13F filings data and its accuracy is **notoriously bad**. We are doing our best to make it better and it's an ongoing process, but there will always be a data bug or error, especially in the years from 1999 to 2013.
+    <br>
+    If you found a bug, please let us know and provide the 'is' and 'should be' data together with your rationale. We will do our best to fix it.
+    </Modal>
+    </Alert>  
+</div>
+
+# **{quarters.length/4}** years Of Superinvestors' Decisions
 ### Since 1999, *The U.S. Securities and Exchange Commission (SEC)* requires institutional investors that **"exercise investment discretion over $100 million or more"** to report what is known as **13F Filing**. <br>
 ### These filings are produced every **Quarter** and investors have **45 days** after the end of quarter to report what financial assets and in what quantity they owned at the last day of each quarter. 
 <hr>
 
 <BigValue
-    data={cik_cusip_per_quarter}
+    data={get_overview_per_quarter}
     title="All Superinvestors"
     value=total_ciks_num0
 />
 
 <BigValue
-    data={cik_cusip_per_quarter}
+    data={get_overview_per_quarter}
     title="Reported Years"
     value=total_years
 />
 
 <BigValue
-    data={cik_cusip_per_quarter}
+    data={get_overview_per_quarter}
     title="Traded Assets"
     value=total_cusip_num0
 />
 
-**TODO**:*Maybe add one more BigValue here for Total Value traded in 25 years*
+<!-- **TODO**:*Maybe add one more BigValue here for Total Value traded in 25 years*
+
+**TODO**:*Add a BigValue for Average %P/L for all cik all time*
 
 
 
 **TODO**:*correct the tooltip formatting for Line Chart for Value, Assets. Now it shows data in Billions and 
-it needs to be Trillions*
+it needs to be Trillions* -->
 
-<hr>
+
 
 <Tabs>
     <Tab label="Value">
         <AreaChart 
-            data={cik_cusip_per_quarter}
+            data={get_overview_per_quarter}
             x=quarter_end_date 
             y=total_value_per_quarter_usd
-            yAxisTitle="$ End Qtr"
+            yAxisTitle="End Qtr"
             sort=asc
         />
 
@@ -72,7 +77,7 @@ it needs to be Trillions*
 
     <Tab label="# Superinvestors">
         <BarChart 
-        data={cik_cusip_per_quarter}
+        data={get_overview_per_quarter}
         x=quarter_end_date 
         y=num_ciks_per_quarter_num0
         yAxisTitle="Active Superinvestors During quarter"
@@ -81,7 +86,7 @@ it needs to be Trillions*
 
         <Tab label="# Assets">
         <BarChart 
-        data={cik_cusip_per_quarter}
+        data={get_overview_per_quarter}
         x=quarter_end_date 
         y=num_cusip_per_quarter_num0
         fmt= '#,##0'
@@ -89,31 +94,36 @@ it needs to be Trillions*
         />
     </Tab>
         <Tab label="Table">
-        <DataTable data="{cik_cusip_per_quarter}" search="true">
-            <Column id="quarter" title='quarter'/>
-            <Column id="total_value_per_quarter_usd" title='Value at End of quarter'/>
+        <DataTable data="{get_overview_per_quarter}" search="true">
+            <Column id="quarter" title='Quarter'/>
+            <Column id="total_value_per_quarter_usd" title='Value'/>
+            <Column id="prc_change_total_value" contentType=delta fmt='#0.01\%' title="Value(Chg)"/>
+            <Column id="num_ciks_per_quarter_num0" title='Superinvestors'/>
+            <Column id="prc_change_cik" contentType=delta fmt='#0.01\%' title="Superinvestors(Chg)"/>
+            <Column id="num_cusip_per_quarter_num0" title='Assets'/>
+            <Column id="prc_change_cusip" contentType=delta fmt='#0.01\%' title="Assets(Chg)"/>
+            
         </DataTable>
 
     </Tab>
 
 </Tabs>
 
-# Quarter: <span style="color: goldenrod;">{inputYearQuater}</span>
+# Reported Quarter: <span style="color: goldenrod;">{inputYearQuater}</span>
 ### Lastest filing closes(ed) on: **{last_reporting_date}** (Fix this)
 <!-- **TODO**:*Fix the code for the last reporting date/reporting closed date* -->
 
 <RangeInputYear {quarters} bind:quarterValue={inputYearQuater} />
 
 <BigValue
-    data={every_cik_every_qtr_filtered}
+    data={every_cik_qtr_filtered}
     title="Total Value"
     value=total_value_quarter_all_cik_usd  
     comparison=prc_change_total_value_pct
-    comparisonTitle="Over {prev_quarter}"
 />
 
 <BigValue
-    data={every_cik_every_qtr_filtered}
+    data={every_cik_qtr_filtered}
     title="# of Superinvestors"
     value=total_num_cik_per_quarter_num0  
     fmt='#,##0'  
@@ -122,27 +132,47 @@ it needs to be Trillions*
 />
 
 <BigValue
-    data={every_cik_every_qtr_filtered}
+    data={every_cik_qtr_filtered}
     title="# of Assets"
     value=total_assets_per_quarter_num0  
     fmt='#,##0'  
     comparison=prc_change_total_num_assets_pct
     comparisonTitle="Over {prev_quarter}"
+/> 
+
+<BigValue
+    data={every_cik_qtr_filtered}
+    title="TWRR"
+    value=roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc  
+    fmt='#0.01\%'  
+    comparison=roll_mean_all_cik_qtr_prc_change
+    comparisonTitle="Over {prev_quarter}"
 />
+<!-- prev_roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc -->
+
+<!-- **TODO**:*Add a BigValue for Average % TWR for all cik for each quarter*
+**TODO**:*Add a table column for Average % TWR for each cik all each quarter* -->
+
+<!-- **TODO**:*Formatting of values in the table is not dynamic - needs correction*
+**TODO**:*The search box is not synchronised with the slider. When inputting search term and 
+selecting values on slider the results ignore the search term*  -->
 
 
 <Tabs>
-    <Tab label="Table">
-        <DataTable data="{every_cik_every_qtr_filtered}" link="cik" search="true">
-            <Column id="cik_name" title='Superinvestor'/>
-            <Column id="num_assets" title='Assets (#)'/>
-            <Column id="value_usd" title='Value ($)' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
-            <Column id="pct_pct" title='Weight (%)'/>
-        </DataTable>
 
+    <Tab label="Table">
+        <DataTable data="{every_cik_qtr_filtered}" link="cik" search="true">
+            <Column id="cik_name" title='Superinvestor'/>
+            <Column id="num_assets" title='Assets'/>
+            <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
+            <Column id="pct_pct" title='Weight'/>
+            <Column id="roll_mean_cik_qtr_adj_mode_sec_pnl_prc" title='TWRR' fmt='#0.01\%'/>
+            <Column id="roll_mean_cik_qtr_prc_change" contentType=delta fmt='#0.01\%' title="TWRR Chg"/>
+        </DataTable>
     </Tab>
 
-    <Tab label="Chart">
+
+<Tab label="Chart">
 
 <ECharts config={
     {
@@ -172,7 +202,7 @@ it needs to be Trillions*
             {
                 name: 'All Assets',
                 type: 'treemap',
-                data: every_cik_every_qtr_filtered.map(item => ({
+                data: every_cik_qtr_filtered.map(item => ({
                     value: item.value_usd,
                     name: item.cik_name,
                     pct_pct: item.pct_pct
@@ -197,12 +227,18 @@ it needs to be Trillions*
             }
         ]
     }
-}/>
+}/> 
 **TODO**:*By dedault, under the chart, the title shows some arbitrary tile's name*
     </Tab>
-
 </Tabs>
 
+
+**TODO**:*I'd like to make the Racing Bar chart work*
+
+**TODO**:*It might be interesting to make a timeline of all cik over all 25 years.
+I could show when each cik first appeared and when it disappeared. When it had gaps in being active
+I could use color coding. Those with no gaps - blue, with gaps - red...o something like it
+i could use this [example](https://unovis.dev/gallery/view?collection=Lines%20and%20Areas&title=Basic%20Timeline) to do the timeline*
 
 
 
@@ -240,7 +276,7 @@ it needs to be Trillions*
 
 
 <!-- <ScatterPlot 
-    data={cik_cusip_per_quarter} 
+    data={get_overview_per_quarter} 
     y=num_cusip_per_quarter_num0 
     x=total_value_per_quarter_usd
     xAxisTitle="total_value_per_quarter_usd" 
@@ -249,5 +285,25 @@ it needs to be Trillions*
 
 
 
+
+
+
+<!-- let sliderValueMapping = {}; -->
+<!-- quarters.forEach((quarter, index) => {
+    sliderValueMapping[quarter] = index;
+});
+
+let updateSearchParams = (key, value) => {
+    if (typeof window !== 'undefined') {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set(key, value);
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+    }
+};
+    
+$: {updateSearchParams('quarter_params', inputYearQuater)}
+$: inputYearQuater = $page.url.searchParams.get('quarter_params')
+$: sliderValue = sliderValueMapping[inputYearQuater] -->
 
 
