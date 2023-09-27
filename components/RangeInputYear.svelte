@@ -1,18 +1,9 @@
 <script>
-  export let quarters = [ 
-    "1999Q1",
-    "1999Q2",
-    "1999Q3",
-    "2000Q3",
-    "2015Q1",
-    "2023Q2",
-    "2023Q3", 
-    "2023Q4"
-  ];	
+  export let quarters = [];	
 	
 
-  let sliderValue = quarters.length - 1; // Initial slider value
-	export let quarterValue = quarters[quarters.length - 1];
+  export let sliderValue = quarters.length - 1; // Initial slider value
+	export let quarterValue = quarters[sliderValue];
 
   function handleInput(event) {
     sliderValue = event.target.value;

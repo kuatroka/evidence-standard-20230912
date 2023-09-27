@@ -61,10 +61,39 @@ export type Every_cik_qtr_cusip = {
 	value_usd: number;
 	shares: number;	
 	pct_pct: number;
+	rolling_twrr: number
 };
 
 export type Quarters_per_cik = {
 	cik: number;
 	quarter: string;
+};
+
+export type Overview_tr_closed = {
+	cik: number;
+	quarter: string;
+	num_closed_tr_per_qtr: number;
+	qtr_open_closed_tr_ratio: number;
+	qtr_mean_tr_twr: number;
+	qtr_avg_tr_duration_qtr: number;
+};
+
+export type Tr_per_cik = {
+	tr_id: string;
+	cik: number;
+	tr_id_link: string
+	tr_open: string;
+	tr_number: number;
+	tr_close: string;
+	tr_open_value: number;
+	tr_open_shares: number;
+	tr_close_value: number;
+	tr_close_shares: number;
+	num_tr2: number;
+	name_of_issuer: string;
+	cik_name: string;
+	cusip: string;
+	tr_duration_qtr: number;
+	tr_twrr: number
 };
 

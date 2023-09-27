@@ -1,0 +1,167 @@
+
+<script>
+ /** @type {import('./$types').PageData} */
+
+let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter));
+let years_active = quarters.length/4;
+let sliderValue = quarters.length -1;
+$: inputYearQuater = quarters[sliderValue];
+
+// ##### Data for the main overview Line Chart
+let entries_get_every_cik_qtr = props.entries_get_every_cik_qtr;
+
+// ##### Data for the dynamicly filtered Big Value components
+$: entries_get_every_cik_qtr_filtered = props.entries_get_every_cik_qtr.filter(d => d.quarter === inputYearQuater);
+$: prev_quarter = entries_get_every_cik_qtr_filtered.map(item => (item.prev_quarter))[0];
+
+// ##### Data for the dynamicly filtered DataTable and Treemap components
+$: entries_get_every_cik_qtr_cusip_filtered = props.entries_get_every_cik_qtr_cusip.filter(d => d.quarter === inputYearQuater);
+
+// ###### formatting of numbers, currency, percentages
+const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'
+const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
+// ########################################################################
+let quarters3 = props.entries_get_overview_tr_closed.map(item => (item.quarter)).reverse();
+
+let sliderValue3 = quarters3.length -1;
+$: inputYearQuater3 = quarters3[sliderValue3];
+
+$: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_closed.filter(d => d.quarter === inputYearQuater3);
+
+</script>
+
+
+# <span style="color: goldenrod;">{entries_get_every_cik_qtr[0].cik_name}</span>
+## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>**
+
+<LineChart
+title="Value($)"
+    data={entries_get_every_cik_qtr}
+    x=quarter
+    y=value_usd fmt={format_usd}
+    yFmt={format_usd}>
+</LineChart>
+
+## **<span style="color: steelblue;">Assets for Quarter</span>**: **<span style="color: goldenrod;">{inputYearQuater}</span>**
+<Slider bind:quarters={quarters} bind:quarterValue={sliderValue} />
+
+**TODO**:*Play with the color of the slider rail and the trail. Try the same color as the lineChart*
+
+**TODO**:*I need to test the brains out of the TWRR numbers. They are wrong. It's not only the bad raw data, but maybe the calculations are wrong too*
+
+
+
+
+<BigValue
+    data={entries_get_every_cik_qtr_filtered}
+    title="Value"
+    value=value_usd  
+    fmt={format_usd}
+    comparison=prc_change_value
+    Comparisonfmt='#0.01\%'  
+    comparisonTitle="% Over {prev_quarter}"
+/>
+
+<BigValue
+    data={entries_get_every_cik_qtr_filtered}
+    title="# of Assets"
+    value=num_assets   
+    comparison=prc_change_num_assets
+    Comparisonfmt='#0.01\%'  
+    comparisonTitle="% Over {prev_quarter}"
+/> 
+
+<BigValue
+    data={entries_get_every_cik_qtr_filtered}
+    title="TWRR"
+    value=roll_mean_cik_qtr_prc_change  
+    fmt='#0\%'
+    Comparisonfmt='#0.01\%'  
+    comparison=roll_mean_cik_qtr_prc_change
+    comparisonTitle="% Over {prev_quarter}"
+/> 
+
+
+<Tabs>
+<Tab label="Table">
+<DataTable data="{entries_get_every_cik_qtr_cusip_filtered}" link="cusip" search="true" rows=9>
+    <Column id="name_of_issuer"  title='Name' wrap='true'/>
+    <Column id="value" fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'} lign="right"/>
+    <Column id="prc_change_value" contentType=delta fmt='#0.01\%' title="QoQ" lign="left"/>
+    <Column id="prc_change_shares" contentType=delta fmt='#0.01\%' title="Shares(Sell/Buy)"/>
+    <Column id="cusip_weight" title='Weight' fmt='#0.01\%' />
+    <Column id="rolling_twrr" title='Rolling TWRR' fmt='#0.01\%' /> 
+
+    
+</DataTable>
+</Tab>
+
+
+<Tab label="Chart">
+
+<ECharts config={
+    {title: {
+            text: 'Value by Asset',
+            left: 'center'},
+        tooltip: {
+        formatter: function (params) {
+                    let value = params.data.value;
+                    let formattedValue = '';
+                    if (value >= 1e12) {
+                        formattedValue = (value / 1e12).toLocaleString('en-US', { maximumFractionDigits: 2 }) + 'T';
+                    } else if (value >= 1e9) {
+                        formattedValue = (value / 1e9).toLocaleString('en-US', { maximumFractionDigits: 2 }) + 'B';
+                    } else if (value >= 1e6) {
+                        formattedValue = (value / 1e6).toLocaleString('en-US', { maximumFractionDigits: 2 }) + 'M';
+                    } else {
+                        formattedValue = value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                    }
+                    return `${params.data.name}<br/>
+                    $${formattedValue}<br/>
+                    ${(params.data.cusip_weight).toFixed(2)}% `;
+                },
+    },
+        series: [
+        {name: 'All Assets',
+            type: 'treemap',
+            data: entries_get_every_cik_qtr_cusip_filtered.map(item => ({
+                    value: item.value,
+                    name: item.name_of_issuer,
+                    cusip_weight: item.cusip_weight
+                })),
+            label: {
+                fontWeight: 'bold',
+            position: 'insideTopLeft',
+            show: true,
+            formatter: '{b}'
+            },
+            emphasis: {
+                label: {
+                    show: true,
+                    fontSize: '14',
+                    fontWeight: 'bold'
+                }
+            },
+            itemStyle: {
+                gapWidth: 3,
+                borderColor: 'white',
+            },
+        }
+        ]
+    }
+}/>
+</Tab>
+</Tabs>
+
+<!-- **TODO**:*Add more stats for individual superinvestor. Maybe the best and the worst trades, a new section on transactions...etc* -->
+
+## **<span style="color: steelblue;">Complete Transactions:</span>** **<span style="color: goldenrod;">{inputYearQuater3}</span>**
+
+<Slider bind:quarters={quarters3} bind:quarterValue={sliderValue3} />
+
+<DataTable data="{entries_get_overview_tr_closed_filtered}"  search="true" rows=9>
+    <Column id="quarter"  title='Quarter'/>
+    <Column id="num_closed_tr_per_qtr" title='# Transactions'/>
+    <Column id="qtr_mean_tr_twr"  fmt='#0.01\%' title="Mean Qtr TWRR"/>
+    <Column id="qtr_open_closed_tr_ratio" title='Open/Closed Ratio'/> 
+</DataTable>

@@ -1,4 +1,5 @@
-import { get_every_cik_qtr_params } from "../../lib/server/db/duckdb";
+import { get_every_cik_qtr, get_every_cik_qtr_cusip,
+    get_overview_tr_closed } from "./../../lib/server/db/duckdb";
 
 /** @type {import('./$types').PageServerLoad} */
 
@@ -28,7 +29,9 @@ export async function load({ params }) {
     const { superinvestor } = params;
     
     return  { 
-    entries_get_every_cik_qtr_params : await get_every_cik_qtr_params(superinvestor)
+    entries_get_every_cik_qtr : await get_every_cik_qtr(superinvestor),
+    entries_get_every_cik_qtr_cusip : await get_every_cik_qtr_cusip(superinvestor),
+    entries_get_overview_tr_closed : await get_overview_tr_closed(superinvestor)
     } ;
 	};
 

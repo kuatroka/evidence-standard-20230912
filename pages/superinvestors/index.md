@@ -2,7 +2,8 @@
 
 let get_overview_per_quarter = props.entries_get_overview_per_quarter;
 let quarters = get_overview_per_quarter.map(item => (item.quarter)).reverse();
-$: inputYearQuater = quarters[quarters.length -1];
+let sliderValue = quarters.length -1;
+$: inputYearQuater = quarters[sliderValue];
 
 $: every_cik_qtr_filtered = props.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater);
 $: prev_quarter = every_cik_qtr_filtered[0].prev_quarter;
@@ -10,6 +11,10 @@ $: prev_quarter = every_cik_qtr_filtered[0].prev_quarter;
 const [ total_quarters, 
         total_ciks,
         last_reporting_date] = get_overview_per_quarter.map(q => [q.total_quarters, q.total_ciks, q.last_reporting_date])[0];
+
+const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'
+
+const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
 
 </script>
 
@@ -38,6 +43,7 @@ const [ total_quarters,
     data={get_overview_per_quarter}
     title="All Superinvestors"
     value=total_ciks_num0
+    
 />
 
 <BigValue
@@ -53,15 +59,9 @@ const [ total_quarters,
 />
 
 <!-- **TODO**:*Maybe add one more BigValue here for Total Value traded in 25 years*
-
 **TODO**:*Add a BigValue for Average %P/L for all cik all time*
-
-
-
 **TODO**:*correct the tooltip formatting for Line Chart for Value, Assets. Now it shows data in Billions and 
 it needs to be Trillions* -->
-
-
 
 <Tabs>
     <Tab label="Value">
@@ -113,13 +113,18 @@ it needs to be Trillions* -->
 ### Lastest filing closes(ed) on: **{last_reporting_date}** (Fix this)
 <!-- **TODO**:*Fix the code for the last reporting date/reporting closed date* -->
 
-<RangeInputYear {quarters} bind:quarterValue={inputYearQuater} />
+<!-- <RangeInputYear {quarters} bind:quarterValue={inputYearQuater} /> -->
+<Slider bind:quarters={quarters} bind:quarterValue={sliderValue} />
 
 <BigValue
     data={every_cik_qtr_filtered}
     title="Total Value"
     value=total_value_quarter_all_cik_usd  
+    fmt={format_usd}
     comparison=prc_change_total_value_pct
+    Comparisonfmt='#0.01\%'  
+    comparisonTitle="Over {prev_quarter}"
+    maxWidth='10em'
 />
 
 <BigValue
@@ -128,7 +133,9 @@ it needs to be Trillions* -->
     value=total_num_cik_per_quarter_num0  
     fmt='#,##0'  
     comparison=prc_change_total_num_cik_pct
+    Comparisonfmt='#0.01\%'  
     comparisonTitle="Over {prev_quarter}"
+    maxWidth='10em'
 />
 
 <BigValue
@@ -137,7 +144,9 @@ it needs to be Trillions* -->
     value=total_assets_per_quarter_num0  
     fmt='#,##0'  
     comparison=prc_change_total_num_assets_pct
+    omparisonfmt='#0.01\%' 
     comparisonTitle="Over {prev_quarter}"
+    maxWidth='10em'
 /> 
 
 <BigValue
@@ -147,11 +156,14 @@ it needs to be Trillions* -->
     fmt='#0.01\%'  
     comparison=roll_mean_all_cik_qtr_prc_change
     comparisonTitle="Over {prev_quarter}"
+    maxWidth='10em'
 />
 <!-- prev_roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc -->
 
-<!-- **TODO**:*Add a BigValue for Average % TWR for all cik for each quarter*
-**TODO**:*Add a table column for Average % TWR for each cik all each quarter* -->
+**TODO**:*Add a BigValue for Average % TWR for all cik for each quarter*
+**TODO**:*All BigValue comparisons seem to be wrong. Fix it*
+**TODO**:*Add a table column for Average % TWR for each cik all each quarter*
+**TODO**:*Think about adding a Transactional TWRR or Rolling Return Rate... which is more needed?*
 
 <!-- **TODO**:*Formatting of values in the table is not dynamic - needs correction*
 **TODO**:*The search box is not synchronised with the slider. When inputting search term and 
@@ -162,7 +174,7 @@ selecting values on slider the results ignore the search term*  -->
 
     <Tab label="Table">
         <DataTable data="{every_cik_qtr_filtered}" link="cik" search="true">
-            <Column id="cik_name" title='Superinvestor'/>
+            <Column id="cik_name" title='Superinvestor' wrap='true'/>
             <Column id="num_assets" title='Assets'/>
             <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
             <Column id="pct_pct" title='Weight'/>
@@ -195,7 +207,7 @@ selecting values on slider the results ignore the search term*  -->
                 }
                 return `${params.data.name}<br/>
                     $${formattedValue}<br/>
-                    ${(params.data.pct_pct * 100).toFixed(2)}% `;
+                    ${(params.data.pct_pct).toFixed(2)}% `;
             },
         },
         series: [
