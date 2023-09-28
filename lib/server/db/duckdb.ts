@@ -182,6 +182,33 @@ export async function get_tr_per_cik(superinvestor?: string, asset?: string): Pr
         return get_tr_per_cik as Tr_per_cik[] ; // Return an object with entries property
         };
 
+/////////////
+export async function get_tr_per_cik_drilldown(superinvestor?: string, asset?: string): Promise<Tr_per_cik[]> {
+    const query = (query: string) => {
+        return new Promise<Tr_per_cik[]>((resolve, reject) => {
+            conn.all(query, (err, res: any) => {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    };
+
+    let sql = `
+    SELECT *
+    FROM main.tr_per_cik_drilldown
+    `;
+
+    if (superinvestor && asset) {
+        sql += `
+        WHERE cik = '${superinvestor}' AND cusip = '${asset}'`;
+    };
+
+    const get_tr_per_cik_drilldown: Tr_per_cik[] = await query(sql);
+    // db.close()
+    console.log(get_tr_per_cik_drilldown.slice(0, 1));
+    return get_tr_per_cik_drilldown as Tr_per_cik[] ; // Return an object with entries property
+    };
+
 
 
 

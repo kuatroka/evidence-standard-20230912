@@ -11,13 +11,11 @@
 
     // '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0,,"M";$#,##k'
 </script>
-<!-- {cik_name}
 
-{name_of_issuer} -->
-<!-- # <span style="color: goldenrod;">{cik_name}</span> {num_tr === 1 ? 'trade' : 'trades'} in<br>**<span style="color: steelblue;">{name_of_issuer}</span>** 
+# <span style="color: goldenrod;">{cik_name}</span> Completed {num_tr === 1 ? 'Transaction' : 'Transactions'} in: <br>**<span style="color: steelblue;">{name_of_issuer}</span>** 
 
-## List of trades:
-(click for details) -->
+<!-- ## List of trades: -->
+<!-- (click for details) -->
 
 
 
@@ -25,27 +23,30 @@
 <DataTable data={tr_per_cik} link=link>
 <Column id="tr_number"  title='Tr #' align="left" />
     <Column id="tr_open"  title='Open'/>
-<Column id="tr_open_value"  title='($)' fmt={format_usd_no_t} align="left"/>
-    <Column id="tr_duration_qtr" title='# Qtr' align="left"/>
+<Column id="tr_open_value"  title='Entry Value' fmt={format_usd_no_t} align="left"/>
+    <Column id="tr_duration_qtr" title='Duration (Qtr)' align="left"/>
     <Column id="tr_close"  title='Close' align="right"/>
-    <Column id="tr_close_value" title='($)' fmt={format_usd_no_t} align="right"/>
-    <Column id="tr_twrr" title='TWRR' fmt='#0.01\%'/> 
+    <Column id="tr_close_value" title='Exit Value' fmt={format_usd_no_t} align="right"/>
+    <Column id="tr_twrr" title='TR TWRR' fmt='#0.01\%'/> 
 </DataTable>
 
 
-<!-- {#if   $page.url.searchParams.get('tr_id')}
-# <span style="color: goldenrod;">Transaction **<span style="color: steelblue;"># {props.tr_per_cik.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))[0].tr_number}</span>** Drill Down</span> -->
+{#if   $page.url.searchParams.get('tr_id')}
+# <span style="color: goldenrod;">Transaction **<span style="color: steelblue;"># {tr_per_cik.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))[0].tr_number}</span>** Drill Down</span>
 
 
-<!-- <DataTable data={props.tr_per_cik_drilldown.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))}>
+<DataTable data={props.entries_tr_per_cik_drilldown.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))}>
 <Column id="quarter"  title='Quarter' sort=true/>
-<Column id="sec_price"  title='SEC Price'/>
-<Column id="tr_type"  title='Type' />
-<Column id="tr_value"  title='Tr Value' fmt={format_usd}/>
+<Column id="adj_mode_sec_price"  title='Price'/>
+<Column id="tr_type"  title='TR Type' alignt="right"/>
+<Column id="tr_shares"  title='TR Shares' align="left"/>
+<!-- <Column id="tr_value"  title='Tr Value' fmt={format_usd}/> -->
 <Column id="value"  title='Total Value' fmt={format_usd}/>
-<Column id="shares"  title='Total Shares'/>
-<Column id="qtr_pnl_prc"  title='Rolling %P/L' fmt='#0.01\%'/>  -->
-<!-- </DataTable> -->
+<Column id="roll_twrr"  title='Rolling TWRR' fmt='#0.01\%'/> 
+<Column id="tr_twrr"  title='TR TWRR' fmt='#0.01\%'/> 
+<Column id="opp_cost"  title='Opp Cost' fmt='#0.01\%'/> 
+<Column id="max_roll_up" title='Max Roll Up' fmt='#0.01\%'/>
+</DataTable>
 
 <!-- {:else} -->
 <!-- <DataTable data={props.tr_per_cik_drilldown}>
@@ -53,7 +54,7 @@
 <Column id="tr_type"  title='Exit On' />
 </DataTable> -->
 
-<!-- {/if} -->
+{/if}
 <!-- **TODO**:*Sort out wrong P/L in transactins wehere stock split occured"*
 
 **TODO**:*Sort out wrong 'CLOSE' when the current quarter is the same as the maximum reported quarter for this cik"*
