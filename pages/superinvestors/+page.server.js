@@ -7,7 +7,7 @@ import { get_every_cik_qtr, get_overview_per_quarter } from "../../lib/server/db
 console.time("total")
 export async function load() {
     return  { 
-      entries_every_cik_qtr : await get_every_cik_qtr(),
+      entries_every_cik_qtr :  await get_every_cik_qtr(),
       entries_get_overview_per_quarter:  await get_overview_per_quarter()
     } ;
 	};

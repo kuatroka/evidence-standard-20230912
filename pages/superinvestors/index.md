@@ -1,4 +1,5 @@
 <script>
+ /** @type {import('./$types').PageData} */
 
 let get_overview_per_quarter = props.entries_get_overview_per_quarter;
 let quarters = get_overview_per_quarter.map(item => (item.quarter)).reverse();
@@ -16,13 +17,14 @@ const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B
 
 const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
 
+
 </script>
 
 
 <!-- {JSON.stringify(props.entries_get_overview_per_quarter[0].quarter,  null, 2)}  -->
 <div style="display: flex; justify-content: center;">
     <Alert status="warning" open="true">
-    <Modal title="Data Quality Warning and Site's Purpose" buttonText="Important Statement About Data Quality and App's Purpose"> 
+    <Modal title="Data Quality Warning and Site's Purpose" buttonText="Our Goal and Data Quality Warning"> 
     This app is in a **technical and functional** beta.
     <br>
     This site is for financial **investigation and research** only. Nothing here constitutes investment or any other kind of advice.
@@ -174,7 +176,7 @@ selecting values on slider the results ignore the search term*  -->
 
     <Tab label="Table">
         <DataTable data="{every_cik_qtr_filtered}" link="cik" search="true">
-            <Column id="cik_name" title='Superinvestor' wrap='true'/>
+            <Column id="cik_name" title='Superinvestor'/>
             <Column id="num_assets" title='Assets'/>
             <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
             <Column id="pct_pct" title='Weight'/>

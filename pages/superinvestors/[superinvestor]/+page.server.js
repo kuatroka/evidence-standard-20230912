@@ -25,13 +25,15 @@ import { get_every_cik_qtr, get_every_cik_qtr_cusip,
 // }
 
 console.time("total")
-export async function load({ params }) {
+export async function load({ params, url, depends }) {
     const { superinvestor } = params;
+    const quarter = url.searchParams.get('quarter_params');
+    depends('params:quarter_params');
     
     return  { 
-    entries_get_every_cik_qtr : await get_every_cik_qtr(superinvestor),
-    entries_get_every_cik_qtr_cusip : await get_every_cik_qtr_cusip(superinvestor),
-    entries_get_overview_tr_closed : await get_overview_tr_closed(superinvestor)
+    entries_get_every_cik_qtr : get_every_cik_qtr(superinvestor),
+    entries_get_every_cik_qtr_cusip : get_every_cik_qtr_cusip(superinvestor, quarter),
+    entries_get_overview_tr_closed : get_overview_tr_closed(superinvestor)
     } ;
 	};
 

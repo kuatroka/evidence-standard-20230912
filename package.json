@@ -28,6 +28,7 @@
     "sqlite3": "5.1.5"
   },
   "devDependencies": {
+    "@vincjo/datatables": "^1.12.7",
     "node-loader": "^2.0.0"
   }
 }

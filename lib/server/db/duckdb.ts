@@ -18,9 +18,11 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
             })
         })
     };
-    const sql = `select *
+    let sql = `select *
                 from 
                 overview_per_quarter`; // Use template literals correctly
+
+
     const overview_per_quarter: Overview_per_quarter[] = await query(sql);
     // db.close()
     return overview_per_quarter as Overview_per_quarter[] ; // Return an object with entries property
@@ -29,7 +31,7 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
 
 ///////// Every cik and quarter with parameters /////////
 
-export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_cik_qtr[]> {
+export async function get_every_cik_qtr(superinvestor?: string, quarter?: string): Promise<Every_cik_qtr[]> {
     const query = (query: string) => {
         return new Promise<Every_cik_qtr[]>((resolve, reject) => {
             conn.all(query, (err, res: any) => {
@@ -68,6 +70,11 @@ export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_c
         WHERE cik = '${superinvestor}'`;
     }
 
+    if (quarter) {
+        sql += `
+        AND quarter = '${quarter}'`;
+    }
+
     sql += `
     ORDER BY cik, quarter`;
 
@@ -80,7 +87,7 @@ export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_c
 
 
 ///////// Every cik, quarter and cusip with parameters /////////
-export async function get_every_cik_qtr_cusip(superinvestor?: string): Promise<Every_cik_qtr_cusip[]> {
+export async function get_every_cik_qtr_cusip(superinvestor?: string, quarter?: string): Promise<Every_cik_qtr_cusip[]> {
     const query = (query: string) => {
         return new Promise<Every_cik_qtr_cusip[]>((resolve, reject) => {
             conn.all(query, (err, res: any) => {
@@ -97,8 +104,14 @@ export async function get_every_cik_qtr_cusip(superinvestor?: string): Promise<E
 
     if (superinvestor) {
         sql += `
-        WHERE cik = '${superinvestor}'`;
+        WHERE cik = '${superinvestor}' `;
     };
+
+    if (quarter) {
+        sql += `
+        AND quarter = '${quarter}'`;
+    }
+
     sql += `ORDER BY value DESC`;
 
     const every_cik_qtr_cusip: Every_cik_qtr_cusip[] = await query(sql);

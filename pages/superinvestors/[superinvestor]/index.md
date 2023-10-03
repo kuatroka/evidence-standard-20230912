@@ -12,7 +12,7 @@ let entries_get_every_cik_qtr = props.entries_get_every_cik_qtr;
 
 // ##### Data for the dynamicly filtered Big Value components
 $: entries_get_every_cik_qtr_filtered = props.entries_get_every_cik_qtr.filter(d => d.quarter === inputYearQuater);
-$: prev_quarter = entries_get_every_cik_qtr_filtered.map(item => (item.prev_quarter))[0];
+$: prev_quarter = entries_get_every_cik_qtr_filtered[0].prev_quarter;
 
 // ##### Data for the dynamicly filtered DataTable and Treemap components
 $: entries_get_every_cik_qtr_cusip_filtered = props.entries_get_every_cik_qtr_cusip.filter(d => d.quarter === inputYearQuater);
@@ -25,7 +25,6 @@ let quarters3 = props.entries_get_overview_tr_closed.map(item => (item.quarter))
 
 let sliderValue3 = quarters3.length -1;
 $: inputYearQuater3 = quarters3[sliderValue3];
-
 $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_closed.filter(d => d.quarter === inputYearQuater3);
 
 </script>
@@ -85,7 +84,7 @@ title="Value($)"
 <Tabs>
 <Tab label="Table">
 <DataTable data="{entries_get_every_cik_qtr_cusip_filtered}" link="cusip" search="true" rows=9>
-    <Column id="name_of_issuer"  title='Name' wrap='true'/>
+    <Column id="name_of_issuer"  title='Name' />
     <Column id="value" fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'} lign="right"/>
     <Column id="prc_change_value" contentType=delta fmt='#0.01\%' title="QoQ" lign="left"/>
     <Column id="prc_change_shares" contentType=delta fmt='#0.01\%' title="Shares(Sell/Buy)"/>
@@ -95,7 +94,6 @@ title="Value($)"
     
 </DataTable>
 </Tab>
-
 
 <Tab label="Chart">
 
@@ -159,9 +157,49 @@ title="Value($)"
 
 <Slider bind:quarters={quarters3} bind:quarterValue={sliderValue3} />
 
-<DataTable data="{entries_get_overview_tr_closed_filtered}"  search="true" rows=9>
+<DataTable data="{entries_get_overview_tr_closed_filtered}"   rows=9>
     <Column id="quarter"  title='Quarter'/>
     <Column id="num_closed_tr_per_qtr" title='# Transactions'/>
     <Column id="qtr_mean_tr_twr"  fmt='#0.01\%' title="Mean Qtr TWRR"/>
     <Column id="qtr_open_closed_tr_ratio" title='Open/Closed Ratio'/> 
 </DataTable>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- // func to add and update search params based on the Slider's quarter
+let updateSearchParams = (key, value) => {
+    if (typeof window !== 'undefined') {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set(key, value);
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        invalidate('params:quarter_params');
+    }
+};    
+$: {updateSearchParams('quarter_params', inputYearQuater)} -->
+
+<!-- ////////////////////////////////////////////////////////// -->
+<!-- corresponding load function -->
+
+<!-- export async function load({ params, url, depends }) {
+    const { superinvestor } = params;
+    const quarter = url.searchParams.get('quarter_params');
+    depends('params:quarter_params');
+    
+    return  { 
+    entries_get_every_cik_qtr : get_every_cik_qtr(superinvestor),
+    entries_get_every_cik_qtr_cusip : get_every_cik_qtr_cusip(superinvestor, quarter),
+    entries_get_overview_tr_closed : get_overview_tr_closed(superinvestor)
+    } ;
+	}; -->
