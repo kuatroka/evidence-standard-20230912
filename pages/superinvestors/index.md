@@ -12,7 +12,7 @@ $: prev_quarter = every_cik_qtr_filtered[0].prev_quarter;
 
 const [ total_quarters, 
         total_ciks,
-        last_reporting_date] = get_overview_per_quarter.map(q => [q.total_quarters, q.total_ciks, q.last_reporting_date])[0];
+        last_reporting_date] = get_overview_per_quarter.map(q => [q.total_quarters, q.total_ciks, q.last_reporting_date.toISOString().slice(0, 10)])[0];
 
 const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'
 
@@ -173,18 +173,18 @@ it needs to be Trillions* -->
 **TODO**:*The search box is not synchronised with the slider. When inputting search term and 
 selecting values on slider the results ignore the search term*  -->
 
-{#await props.streamed.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater)}
+<!-- {#await props.streamed.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater)}
     <p>loading...</p>
-{:then data}
+{:then data} -->
 
 <Tabs>
 
     <Tab label="Table">
-        <DataTable data="{data}" link="cik" search="true">
+        <DataTable data="{every_cik_qtr_filtered}" link="cik" search="true">
             <Column id="cik_name" title='Superinvestor' wrap='true'/>
             <Column id="num_assets" title='Assets'/>
             <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
-            <Column id="pct_pct" title='Weight'/>
+            <Column id="pct_pct" title='Weight' fmt='#0.01\%'/>
             <Column id="roll_mean_cik_qtr_adj_mode_sec_pnl_prc" title='TWRR' contentType=delta fmt='#0.01\%'/>
             <!-- <Column id="roll_mean_cik_qtr_prc_change" contentType=delta fmt='#0.01\%' title="TWRR Chg"/> -->
         </DataTable>
@@ -250,7 +250,7 @@ selecting values on slider the results ignore the search term*  -->
 **TODO**:*By dedault, under the chart, the title shows some arbitrary tile's name*
     </Tab>
 </Tabs>
-{/await}
+<!-- {/await} -->
 
 
 **TODO**:*I'd like to make the Racing Bar chart work*

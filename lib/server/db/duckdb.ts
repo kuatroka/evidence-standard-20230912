@@ -1,12 +1,12 @@
 import DuckDB, { OPEN_READONLY } from 'duckdb'
-import { DUCKDB_SHORT_PATH } from './db-path.js';
+import { DUCKDB_PATH } from './db-path.js';
 import type { Every_cik_qtr, Overview_per_quarter,
     Every_cik_qtr_cusip, Quarters_per_cik, Overview_tr_closed,
     Tr_per_cik } from "./types";
     
 
 // Instantiate DuckDB
-const db = new DuckDB.Database(DUCKDB_SHORT_PATH, OPEN_READONLY);
+const db = new DuckDB.Database(DUCKDB_PATH, OPEN_READONLY);
 const conn = db.connect();
 
 ///////// Overview of every quarter /////////
@@ -27,7 +27,8 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
         any_value(roll_mean_all_cik_qtr_prc_change) AS TWRR_prc_change
     FROM main.every_cik_qtr
     GROUP BY quarter) AS b
-    ON a.quarter = b.quarter`; // Use template literals correctly
+    ON a.quarter = b.quarter
+    order by a.quarter desc`; // Use template literals correctly
 
 
     const overview_per_quarter: Overview_per_quarter[] = await query(sql);
