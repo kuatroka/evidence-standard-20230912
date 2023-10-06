@@ -1,8 +1,5 @@
 <script>
  /** @type {import('./$types').PageData} */
-import Carousel from 'svelte-carousel'
-import { browser } from '$app/environment';
-import { invalidate } from '$app/navigation';
 
 let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter));
 let quarters_carousel = quarters;
@@ -30,8 +27,6 @@ let quarters3 = props.entries_get_overview_tr_closed.map(item => (item.quarter))
 let sliderValue3 = quarters3.length -1;
 $: inputYearQuater3 = quarters3[sliderValue3];
 $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_closed.filter(d => d.quarter === inputYearQuater3);
-
-
 
 
 </script>
@@ -168,6 +163,44 @@ title="Value($)"
     <Column id="qtr_open_closed_tr_ratio" title='Open/Closed Ratio'/> 
 </DataTable>
 
+
+<style>
+
+.quarters {
+    display: flex;
+    justify-content: center;
+}
+
+.carousel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .carousel .quarters {
+        margin: 3px;
+        padding: 1px 5px; /* Updated padding to make buttons smaller */
+        border: 1px solid steelblue;
+        background-color: steelblue;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+
+    .carousel .quarters.active {
+        background-color: #333;     
+        color: #fff;
+    }
+
+
+    .carousel .quarters.active:hover {
+        background-color: #444;
+    }
+
+
+</style>
 
 
 

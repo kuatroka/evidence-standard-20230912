@@ -1,12 +1,12 @@
 import DuckDB, { OPEN_READONLY } from 'duckdb'
-import { DUCKDB_SHORT_PATH } from './db-path.js';
+import { DUCKDB_PATH } from '../lib/server/db/db-path.js';
 import type { Every_cik_qtr, Overview_per_quarter,
     Every_cik_qtr_cusip, Quarters_per_cik, Overview_tr_closed,
-    Tr_per_cik } from "./types";
+    Tr_per_cik } from "../lib/server/db/types.js";
     
 
 // Instantiate DuckDB
-const db = new DuckDB.Database(DUCKDB_SHORT_PATH, OPEN_READONLY);
+const db = new DuckDB.Database(DUCKDB_PATH, OPEN_READONLY);
 const conn = db.connect();
 
 ///////// Overview of every quarter /////////
@@ -19,27 +19,21 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
             })
         })
     };
-    let sql = `SELECT DISTINCT *
-    FROM main.overview_per_quarter AS a
-    LEFT JOIN 
-    (SELECT quarter, 
-        any_value(roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc) AS TWRR ,
-        any_value(roll_mean_all_cik_qtr_prc_change) AS TWRR_prc_change
-    FROM main.every_cik_qtr
-    GROUP BY quarter) AS b
-    ON a.quarter = b.quarter`; // Use template literals correctly
+    let sql = `select *
+                from 
+                overview_per_quarter`; // Use template literals correctly
 
 
     const overview_per_quarter: Overview_per_quarter[] = await query(sql);
     // db.close()
-    console.log('overview_per_quarter:',overview_per_quarter.slice(0, 1));
     return overview_per_quarter as Overview_per_quarter[] ; // Return an object with entries property
     
 };
 
 ///////// Every cik and quarter with parameters /////////
-console.time("get_every_cik_qtr_no_params")
-export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {    
+
+export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_cik_qtr[]> {
+    console.log(superinvestor)
     const query = (query: string) => {
         return new Promise<Every_cik_qtr[]>((resolve, reject) => {
             conn.all(query, (err, res: any) => {
@@ -54,25 +48,41 @@ export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {
         cik,
         cik_name,
         quarter,
+        quarter_end_date,
+        prev_quarter,
+        total_value_quarter_all_cik_usd,
+        prc_change_total_value_pct,
+        total_num_cik_per_quarter_num0,
+        prc_change_total_num_cik_pct,
+        total_assets_per_quarter_num0,
+        prc_change_num_assets,
+        prc_change_total_num_assets_pct,
         roll_mean_cik_qtr_adj_mode_sec_pnl_prc,
+        roll_mean_cik_qtr_prc_change,
+        roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc,
+        roll_mean_all_cik_qtr_prc_change,
         num_assets,
         value_usd,
+        prc_change_value,
         pct_pct
-    FROM every_cik_qtr
-    ORDER BY quarter DESC, value_usd DESC`;
+    FROM every_cik_qtr`;
 
+    if (superinvestor) {
+        sql += `
+        WHERE cik = '${superinvestor}'`;
+} 
+    sql += `
+    ORDER BY cik, quarter`;
 
-    const get_every_cik_qtr_no_params: Every_cik_qtr[] = await query(sql);
-    console.log('get_every_cik_qtr_no_params:',get_every_cik_qtr_no_params.slice(0, 1));
+    const get_every_cik_qtr: Every_cik_qtr[] = await query(sql);
+    console.log('get_every_cik_qtr:',get_every_cik_qtr.slice(0, 1));
     // db.close()
-    return get_every_cik_qtr_no_params as Every_cik_qtr[]; // Return an object with entries property
-};
-console.timeEnd("get_every_cik_qtr_no_params")
+    return get_every_cik_qtr as Every_cik_qtr[]; // Return an object with entries property
+}
 
 
 
 ///////// Every cik, quarter and cusip with parameters /////////
-console.time("get_every_cik_qtr_cusip")
 export async function get_every_cik_qtr_cusip(superinvestor?: string): Promise<Every_cik_qtr_cusip[]> {
     
     const query = (query: string) => {
@@ -94,16 +104,13 @@ export async function get_every_cik_qtr_cusip(superinvestor?: string): Promise<E
         WHERE cik = '${superinvestor}' `;
     };
 
-
     sql += `ORDER BY value DESC`;
 
     const every_cik_qtr_cusip: Every_cik_qtr_cusip[] = await query(sql);
     
     // db.close()
-    console.log('get_every_cik_qtr_cusip:',every_cik_qtr_cusip.slice(0, 1));
     return every_cik_qtr_cusip as Every_cik_qtr_cusip[]; // Return an object with entries property
-};
-console.timeEnd("get_every_cik_qtr_cusip")
+}
 
 ///////////
 

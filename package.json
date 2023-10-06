@@ -20,6 +20,8 @@
     "better-sqlite3": "^8.6.0",
     "duckdb-wasm-kit": "^0.1.16",
     "nodejs-polars": "^0.8.2",
+    "resize-observer": "^1.0.4",
+    "svelte-carousel": "^1.0.25",
     "web-worker": "^1.2.0"
   },
   "overrides": {

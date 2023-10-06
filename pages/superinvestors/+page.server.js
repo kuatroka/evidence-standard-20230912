@@ -1,14 +1,14 @@
-import { get_every_cik_qtr, get_overview_per_quarter } from "../../lib/server/db/duckdb";
-
+import { get_every_cik_qtr_no_params, get_overview_per_quarter } from "../../lib/server/db/duckdb";
 /** @type {import('./$types').PageServerLoad} */
 
-
-
 console.time("total")
-export async function load() {
-    return  { 
-      entries_every_cik_qtr :  await get_every_cik_qtr(),
-      entries_get_overview_per_quarter:  await get_overview_per_quarter()
+export async function load({params}) {
+  // const { superinvestor } = params;
+
+  return  { 
+      
+      entries_get_overview_per_quarter:  await get_overview_per_quarter(),
+      streamed: {entries_every_cik_qtr :   await  get_every_cik_qtr_no_params()}
     } ;
 	};
 

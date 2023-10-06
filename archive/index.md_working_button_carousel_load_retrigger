@@ -1,14 +1,18 @@
 <script>
+ /** @type {import('./$types').PageData} */
+import Carousel from 'svelte-carousel'
+import { browser } from '$app/environment';
+import { invalidate } from '$app/navigation';
 
 let get_overview_per_quarter = props.entries_get_overview_per_quarter;
-$: get_overview_per_quarter_filtered = props.entries_get_overview_per_quarter.filter(item => item.quarter === inputYearQuater);
-
 let quarters = get_overview_per_quarter.map(item => (item.quarter)).reverse();
 let sliderValue = quarters.length -1;
 $: inputYearQuater = quarters[sliderValue];
 
-$: every_cik_qtr_filtered = props.streamed.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater);
-$: prev_quarter = every_cik_qtr_filtered[0].prev_quarter;
+const quarters_carousel = quarters;
+
+$: every_cik_qtr_filtered = props.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater4);
+// $: prev_quarter = every_cik_qtr_filtered[0].prev_quarter;
 
 const [ total_quarters, 
         total_ciks,
@@ -18,13 +22,30 @@ const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B
 
 const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
 
+
+let inputYearQuater4 = null || quarters.at(-1);
+$: inputYearQuarter4 = quarters[sliderValue];
+
+// <!-- // func to add and update search params based on the Slider's quarter
+let updateSearchParams = (key, value) => {
+    if (typeof window !== 'undefined') {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set(key, value);
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        invalidate('params:quarter_params');
+    }
+}; 
+
+updateSearchParams('quarter_params', inputYearQuater4)
+
 </script>
 
 
 <!-- {JSON.stringify(props.entries_get_overview_per_quarter[0].quarter,  null, 2)}  -->
 <div style="display: flex; justify-content: center;">
     <Alert status="warning" open="true">
-    <Modal title="Data Quality Warning and Site's Purpose" buttonText="Important Statement About Data Quality and App's Purpose"> 
+    <Modal title="Data Quality Warning and Site's Purpose" buttonText="Our Goal and Data Quality Warning"> 
     This app is in a **technical and functional** beta.
     <br>
     This site is for financial **investigation and research** only. Nothing here constitutes investment or any other kind of advice.
@@ -111,60 +132,79 @@ it needs to be Trillions* -->
 
 </Tabs>
 
-# Reported Quarter: <span style="color: goldenrod;">{inputYearQuater}</span>
+# Reported Quarter: <span style="color: goldenrod;">{inputYearQuater4}</span>
 ### Lastest filing closes(ed) on: **{last_reporting_date}** (Fix this)
 <!-- **TODO**:*Fix the code for the last reporting date/reporting closed date* -->
 
-<!-- <RangeInputYear {quarters} bind:quarterValue={inputYearQuater} /> -->
 <Slider bind:quarters={quarters} bind:quarterValue={sliderValue} />
 
+{#if browser}
+<div class='carousel'>
+<Carousel 
+    particlesToShow={6}
+    particlesToScroll={6}
+    infinite={true}
+    initialPageIndex={16}
+    >
+        {#each quarters_carousel as quarter, index (index)}
+        <button class='quarters'
+        class:active={inputYearQuater4 === quarter}
+        on:click={() => {updateSearchParams('quarter_params', quarter);
+        inputYearQuater4 = quarter;
+        }}
+        >
+        {quarter}
+    </button>
+        {/each}
+        <span slot="left-control">Left</span>
+        <span slot="right-control">Right</span>
+</Carousel>
+</div>
+{/if}
 
 
 <BigValue
-    data={get_overview_per_quarter_filtered}
+    data={every_cik_qtr_filtered}
     title="Total Value"
-    value=total_value_per_quarter_usd  
+    value=total_value_quarter_all_cik_usd  
     fmt={format_usd}
-    comparison=prc_change_total_value
+    comparison=prc_change_total_value_pct
     Comparisonfmt='#0.01\%'  
-    comparisonTitle="% QoQ"
     maxWidth='10em'
 />
 
 <BigValue
-    data={get_overview_per_quarter_filtered}
+    data={every_cik_qtr_filtered}
     title="# of Superinvestors"
-    value=num_ciks_per_quarter_num0  
+    value=total_num_cik_per_quarter_num0  
     fmt='#,##0'  
-    comparison=prc_change_cik
+    comparison=prc_change_total_num_cik_pct
     Comparisonfmt='#0.01\%'  
-    comparisonTitle="% QoQ"
     maxWidth='10em'
 />
 
 <BigValue
-    data={get_overview_per_quarter_filtered}
+    data={every_cik_qtr_filtered}
     title="# of Assets"
-    value=num_cusip_per_quarter_num0  
+    value=total_assets_per_quarter_num0  
     fmt='#,##0'  
-    comparison=prc_change_cusip
+    comparison=prc_change_total_num_assets_pct
     omparisonfmt='#0.01\%' 
-    comparisonTitle="% QoQ"
     maxWidth='10em'
 /> 
 
 <BigValue
-    data={get_overview_per_quarter_filtered}
+    data={every_cik_qtr_filtered}
     title="TWRR"
-    value=TWRR  
+    value=roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc  
     fmt='#0.01\%'  
-    comparison=TWRR_prc_change
-    comparisonTitle="% QoQ"
+    comparison=roll_mean_all_cik_qtr_prc_change
     maxWidth='10em'
 />
+    <!-- comparisonTitle="Over {prev_quarter}" -->
 <!-- prev_roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc -->
 
-**TODO**:*TWRR comes wrong from the table*
+**TODO**:*Add a BigValue for Average % TWR for all cik for each quarter*
 **TODO**:*All BigValue comparisons seem to be wrong. Fix it*
 **TODO**:*Add a table column for Average % TWR for each cik all each quarter*
 **TODO**:*Think about adding a Transactional TWRR or Rolling Return Rate... which is more needed?*
@@ -173,20 +213,17 @@ it needs to be Trillions* -->
 **TODO**:*The search box is not synchronised with the slider. When inputting search term and 
 selecting values on slider the results ignore the search term*  -->
 
-{#await props.streamed.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater)}
-    <p>loading...</p>
-{:then data}
 
 <Tabs>
 
     <Tab label="Table">
-        <DataTable data="{data}" link="cik" search="true">
-            <Column id="cik_name" title='Superinvestor' wrap='true'/>
+        <DataTable data="{every_cik_qtr_filtered}" link="cik" search="true">
+            <Column id="cik_name" title='Superinvestor'/>
             <Column id="num_assets" title='Assets'/>
             <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
             <Column id="pct_pct" title='Weight'/>
-            <Column id="roll_mean_cik_qtr_adj_mode_sec_pnl_prc" title='TWRR' contentType=delta fmt='#0.01\%'/>
-            <!-- <Column id="roll_mean_cik_qtr_prc_change" contentType=delta fmt='#0.01\%' title="TWRR Chg"/> -->
+            <Column id="roll_mean_cik_qtr_adj_mode_sec_pnl_prc" title='TWRR' fmt='#0.01\%'/>
+            <Column id="roll_mean_cik_qtr_prc_change" contentType=delta fmt='#0.01\%' title="TWRR Chg"/>
         </DataTable>
     </Tab>
 
@@ -250,7 +287,6 @@ selecting values on slider the results ignore the search term*  -->
 **TODO**:*By dedault, under the chart, the title shows some arbitrary tile's name*
     </Tab>
 </Tabs>
-{/await}
 
 
 **TODO**:*I'd like to make the Racing Bar chart work*
@@ -262,7 +298,43 @@ i could use this [example](https://unovis.dev/gallery/view?collection=Lines%20an
 
 
 
+<style>
 
+.quarters {
+    display: flex;
+    justify-content: center;
+}
+
+.carousel {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .carousel .quarters {
+        margin: 3px;
+        padding: 1px 5px; /* Updated padding to make buttons smaller */
+        border: 1px solid goldenrod;
+        background-color: goldenrod;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+
+    .carousel .quarters.active {
+        background-color: #333;     
+        color: #fff;
+    }
+
+
+    .carousel .quarters.active:hover {
+        background-color: #444;
+    }
+
+
+</style>
 
 
 
@@ -327,3 +399,78 @@ $: inputYearQuater = $page.url.searchParams.get('quarter_params')
 $: sliderValue = sliderValueMapping[inputYearQuater] -->
 
 
+<!-- ///////////////////// -->
+
+<!-- working button carousel with re -load function -->
+<!-- /+page.server.ts
+
+import { get_every_cik_qtr, get_overview_per_quarter } from "../../lib/server/db/duckdb";
+
+/** @type {import('./$types').PageServerLoad} */
+
+
+
+console.time("total")
+export async function load({url, depends, params}) {
+  const { superinvestor } = params;
+  const quarter = url.searchParams.get('quarter_params');
+  depends('params:quarter_params');
+
+  return  { 
+      entries_every_cik_qtr :   get_every_cik_qtr(superinvestor, quarter),
+      entries_get_overview_per_quarter:  await get_overview_per_quarter()
+    } ;
+	};
+
+console.timeEnd("total") -->
+
+
+
+
+
+
+
+///////////////////
+
+let inputYearQuater4 = null || quarters.at(-1);
+
+// <!-- // func to add and update search params based on the Slider's quarter
+let updateSearchParams = (key, value) => {
+    if (typeof window !== 'undefined') {
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set(key, value);
+        const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        invalidate('params:quarter_params');
+    }
+}; 
+
+updateSearchParams('quarter_params', inputYearQuater4)
+
+
+</script>
+{quarters}
+
+{#if browser}
+<div class='carousel'>
+<Carousel 
+    particlesToShow={6}
+    particlesToScroll={6}
+    infinite={true}
+    initialPageIndex={16}
+    >
+        {#each quarters_carousel as quarter, index (index)}
+        <button class='quarters'
+        class:active={inputYearQuater4 === quarter}
+        on:click={() => {updateSearchParams('quarter_params', quarter);
+        inputYearQuater4 = quarter;
+        }}
+        >
+        {quarter}
+    </button>
+        {/each}
+        <span slot="left-control">Left</span>
+        <span slot="right-control">Right</span>
+</Carousel>
+</div>
+{/if}
