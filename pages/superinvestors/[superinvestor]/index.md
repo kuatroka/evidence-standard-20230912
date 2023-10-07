@@ -4,7 +4,7 @@ import Carousel from 'svelte-carousel'
 import { browser } from '$app/environment';
 import { invalidate } from '$app/navigation';
 
-let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter));
+let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter)).reverse();
 let quarters_carousel = quarters;
 
 let years_active = quarters.length/4;
@@ -35,7 +35,7 @@ $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_close
 
 
 </script>
-{quarters}
+<!-- {quarters} -->
 
 # <span style="color: goldenrod;">{entries_get_every_cik_qtr[0].cik_name}</span>
 ## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>**
@@ -43,7 +43,7 @@ $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_close
 <LineChart
 title="Value($)"
     data={entries_get_every_cik_qtr}
-    x=quarter
+    x=quarter_end_date
     y=value_usd fmt={format_usd}
     yFmt={format_usd}>
 </LineChart>
@@ -65,6 +65,7 @@ title="Value($)"
     fmt={format_usd}
     comparison=prc_change_value
     Comparisonfmt='#0.01\%'  
+    comparisonTitle="% QoQ"
 />
 
 <BigValue
@@ -73,6 +74,7 @@ title="Value($)"
     value=num_assets   
     comparison=prc_change_num_assets
     Comparisonfmt='#0.01\%'  
+    comparisonTitle="% QoQ"
 /> 
 
 <BigValue
@@ -82,6 +84,7 @@ title="Value($)"
     fmt='#0\%'
     Comparisonfmt='#0.01\%'  
     comparison=roll_mean_cik_qtr_prc_change
+    comparisonTitle="% QoQ"
 /> 
 
 

@@ -164,10 +164,10 @@ it needs to be Trillions* -->
 />
 <!-- prev_roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc -->
 
-**TODO**:*TWRR comes wrong from the table*
+<!-- **TODO**:*TWRR comes wrong from the table*
 **TODO**:*All BigValue comparisons seem to be wrong. Fix it*
 **TODO**:*Add a table column for Average % TWR for each cik all each quarter*
-**TODO**:*Think about adding a Transactional TWRR or Rolling Return Rate... which is more needed?*
+**TODO**:*Think about adding a Transactional TWRR or Rolling Return Rate... which is more needed?* -->
 
 <!-- **TODO**:*Formatting of values in the table is not dynamic - needs correction*
 **TODO**:*The search box is not synchronised with the slider. When inputting search term and 
@@ -185,7 +185,7 @@ selecting values on slider the results ignore the search term*  -->
             <Column id="num_assets" title='Assets'/>
             <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
             <Column id="pct_pct" title='Weight' fmt='#0.01\%'/>
-            <Column id="roll_mean_cik_qtr_adj_mode_sec_pnl_prc" title='TWRR' contentType=delta fmt='#0.01\%'/>
+            <Column id="roll_mean_cik_qtr_adj_median_sec_pnl_prc" title='TWRR' contentType=delta fmt='#0.01\%'/>
             <!-- <Column id="roll_mean_cik_qtr_prc_change" contentType=delta fmt='#0.01\%' title="TWRR Chg"/> -->
         </DataTable>
     </Tab>
@@ -247,18 +247,18 @@ selecting values on slider the results ignore the search term*  -->
         ]
     }
 }/> 
-**TODO**:*By dedault, under the chart, the title shows some arbitrary tile's name*
+<!-- **TODO**:*By dedault, under the chart, the title shows some arbitrary tile's name* -->
     </Tab>
 </Tabs>
 <!-- {/await} -->
 
 
-**TODO**:*I'd like to make the Racing Bar chart work*
+<!-- **TODO**:*I'd like to make the Racing Bar chart work*
 
 **TODO**:*It might be interesting to make a timeline of all cik over all 25 years.
 I could show when each cik first appeared and when it disappeared. When it had gaps in being active
 I could use color coding. Those with no gaps - blue, with gaps - red...o something like it
-i could use this [example](https://unovis.dev/gallery/view?collection=Lines%20and%20Areas&title=Basic%20Timeline) to do the timeline*
+i could use this [example](https://unovis.dev/gallery/view?collection=Lines%20and%20Areas&title=Basic%20Timeline) to do the timeline* -->
 
 
 

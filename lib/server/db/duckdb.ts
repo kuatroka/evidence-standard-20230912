@@ -1,12 +1,12 @@
 import DuckDB, { OPEN_READONLY } from 'duckdb'
-import { DUCKDB_PATH } from './db-path.js';
+import { DUCKDB_SHORT_PATH } from './db-path.js';
 import type { Every_cik_qtr, Overview_per_quarter,
     Every_cik_qtr_cusip, Quarters_per_cik, Overview_tr_closed,
     Tr_per_cik } from "./types";
     
 
 // Instantiate DuckDB
-const db = new DuckDB.Database(DUCKDB_PATH, OPEN_READONLY);
+const db = new DuckDB.Database(DUCKDB_SHORT_PATH, OPEN_READONLY);
 const conn = db.connect();
 
 ///////// Overview of every quarter /////////
@@ -23,7 +23,7 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
     FROM main.overview_per_quarter AS a
     LEFT JOIN 
     (SELECT quarter, 
-        any_value(roll_mean_all_cik_qtr_adj_mode_sec_pnl_prc) AS TWRR ,
+        any_value(roll_mean_all_cik_qtr_adj_median_sec_pnl_prc) AS TWRR ,
         any_value(roll_mean_all_cik_qtr_prc_change) AS TWRR_prc_change
     FROM main.every_cik_qtr
     GROUP BY quarter) AS b
@@ -55,12 +55,11 @@ export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {
         cik,
         cik_name,
         quarter,
-        roll_mean_cik_qtr_adj_mode_sec_pnl_prc,
+        roll_mean_cik_qtr_adj_median_sec_pnl_prc,
         num_assets,
         value_usd,
         pct_pct
-    FROM every_cik_qtr
-    ORDER BY quarter DESC, value_usd DESC`;
+    FROM every_cik_qtr`;
 
 
     const get_every_cik_qtr_no_params: Every_cik_qtr[] = await query(sql);
@@ -69,7 +68,46 @@ export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {
     return get_every_cik_qtr_no_params as Every_cik_qtr[]; // Return an object with entries property
 };
 console.timeEnd("get_every_cik_qtr_no_params")
+//////////////////////////////////////////////
+console.time("get_every_cik_qtr")
+export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_cik_qtr[]> {    
+    const query = (query: string) => {
+        return new Promise<Every_cik_qtr[]>((resolve, reject) => {
+            conn.all(query, (err, res: any) => {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    };
 
+    let sql = `
+    SELECT 
+        cik,
+        cik_name,
+        quarter,
+        quarter_end_date,
+        roll_mean_cik_qtr_adj_median_sec_pnl_prc,
+        roll_mean_cik_qtr_prc_change,
+        prc_change_value,
+        prc_change_num_assets,
+        num_assets,
+        value_usd,
+        pct_pct
+    FROM every_cik_qtr
+    WHERE value_usd > 0 AND cik = '${superinvestor}'`;
+
+    // if (superinvestor) {
+    //     sql += `
+    //     WHERE cik = '${superinvestor}' `;
+    // };
+    sql += `ORDER BY quarter DESC`;
+
+    const get_every_cik_qtr: Every_cik_qtr[] = await query(sql);
+    console.log('get_every_cik_qtr:',get_every_cik_qtr.slice(0, 1));
+    // db.close()
+    return get_every_cik_qtr as Every_cik_qtr[]; // Return an object with entries property
+};
+console.timeEnd("get_every_cik_qtr")
 
 
 ///////// Every cik, quarter and cusip with parameters /////////

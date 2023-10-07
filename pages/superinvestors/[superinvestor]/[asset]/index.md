@@ -37,7 +37,7 @@
 
 <DataTable data={props.entries_tr_per_cik_drilldown.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))}>
 <Column id="quarter"  title='Quarter' sort=true/>
-<Column id="adj_mode_sec_price"  title='Price'/>
+<Column id="adj_median_sec_price"  title='Price'/>
 <Column id="tr_type"  title='TR Type' alignt="right"/>
 <Column id="tr_shares"  title='TR Shares' align="left"/>
 <!-- <Column id="tr_value"  title='Tr Value' fmt={format_usd}/> -->
