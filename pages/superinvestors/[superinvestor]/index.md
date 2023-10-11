@@ -47,13 +47,16 @@ title="Value($)"
     y=value_usd fmt={format_usd}
     yFmt={format_usd}>
 </LineChart>
+<hr>
 
-## **<span style="color: steelblue;">Assets for Quarter</span>**: **<span style="color: goldenrod;">{inputYearQuater}</span>**
+## **<span style="color: steelblue;">Assets On</span>**: **<span style="color: goldenrod;">{inputYearQuater}</span>**
 <Slider bind:quarters={quarters} bind:quarterValue={sliderValue} />
 
-**TODO**:*Play with the color of the slider rail and the trail. Try the same color as the lineChart*
+<!-- **TODO**:*Play with the color of the slider rail and the trail. Try the same color as the lineChart*
 
-**TODO**:*I need to test the brains out of the TWRR numbers. They are wrong. It's not only the bad raw data, but maybe the calculations are wrong too*
+**TODO**:*I need to test the brains out of the TWRR numbers. They are wrong. It's not only the bad raw data, but maybe the calculations are wrong too* -->
+
+<!-- **TODO**:*Add a column with Position Duration* -->
 
 
 
@@ -79,8 +82,8 @@ title="Value($)"
 
 <BigValue
     data={entries_get_every_cik_qtr_filtered}
-    title="TWRR"
-    value=roll_mean_cik_qtr_prc_change  
+    title="Qtr TWRR"
+    value=roll_mean_cik_qtr_adj_median_sec_pnl_prc  
     fmt='#0\%'
     Comparisonfmt='#0.01\%'  
     comparison=roll_mean_cik_qtr_prc_change
@@ -94,9 +97,9 @@ title="Value($)"
     <Column id="name_of_issuer"  title='Asset' />
     <Column id="value" fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'} lign="right"/>
     <Column id="prc_change_value" contentType=delta fmt='#0.01\%' title="Value(QoQ)" lign="left"/>
-    <Column id="prc_change_shares" contentType=delta fmt='#0.01\%' title="Shares(QoQ)"/>
+    <!-- <Column id="prc_change_shares" contentType=delta fmt='#0.01\%' title="Shares(QoQ)"/> -->
     <Column id="cusip_weight" title='Weight' fmt='#0.01\%' />
-    <Column id="rolling_twrr" title='Rolling TWRR' fmt='#0.01\%' /> 
+    <Column id="rolling_twrr" title='Asset TWRR' contentType=delta deltaSymbol=false fmt='#0.01\%' /> 
 
     
 </DataTable>
@@ -160,7 +163,7 @@ title="Value($)"
 
 <!-- **TODO**:*Add more stats for individual superinvestor. Maybe the best and the worst trades, a new section on transactions...etc* -->
 
-## **<span style="color: steelblue;">Complete Transactions:</span>** **<span style="color: goldenrod;">{inputYearQuater3}</span>**
+<!-- ## **<span style="color: steelblue;">Complete Transactions:</span>** **<span style="color: goldenrod;">{inputYearQuater3}</span>**
 
 <Slider bind:quarters={quarters3} bind:quarterValue={sliderValue3} />
 
@@ -169,7 +172,7 @@ title="Value($)"
     <Column id="num_closed_tr_per_qtr" title='# Transactions'/>
     <Column id="qtr_mean_tr_twr"  fmt='#0.01\%' title="Mean Qtr TWRR"/>
     <Column id="qtr_open_closed_tr_ratio" title='Open/Closed Ratio'/> 
-</DataTable>
+</DataTable> -->
 
 
 

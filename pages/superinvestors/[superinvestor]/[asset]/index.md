@@ -1,5 +1,5 @@
 <script>
-    // const total_cik_per_cusip = props.other_cik_per_cusip[0].total_num_cik
+    const total_cik_per_cusip = props.entries_other_cik_per_cusip[0].total_num_cik
     // const total_tr_per_cusip = props.other_cik_per_cusip[0].total_num_tr
     let tr_per_cik = props.entries_tr_per_cik;
     const cik_name = props.entries_tr_per_cik.at(0).cik_name
@@ -12,7 +12,7 @@
     // '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0,,"M";$#,##k'
 </script>
 
-# <span style="color: goldenrod;">{cik_name}</span> Completed {num_tr === 1 ? 'Transaction' : 'Transactions'} in: <br>**<span style="color: steelblue;">{name_of_issuer}</span>** 
+# <span style="color: goldenrod;">{cik_name}</span> <br> {num_tr === 1 ? 'Position' : 'Positions'} in: <br>**<span style="color: steelblue;">{name_of_issuer}</span>** 
 
 <!-- ## List of trades: -->
 <!-- (click for details) -->
@@ -26,7 +26,7 @@
 <Column id="tr_open_value"  title='Entry Value' fmt={format_usd_no_t} align="left"/>
     <Column id="tr_duration_qtr" title='Duration (Qtr)' align="left"/>
     <Column id="tr_close"  title='Close' align="right"/>
-    <Column id="tr_close_value" title='Exit Value' fmt={format_usd_no_t} align="right"/>
+    <!-- <Column id="tr_close_value" title='Exit Value' fmt={format_usd_no_t} align="right"/> -->
     <Column id="tr_twrr" title='TR TWRR' fmt='#0.01\%'/> 
 </DataTable>
 
@@ -34,18 +34,44 @@
 {#if   $page.url.searchParams.get('tr_id')}
 # <span style="color: goldenrod;">Transaction **<span style="color: steelblue;"># {tr_per_cik.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))[0].tr_number}</span>** Drill Down</span>
 
+<BigValue
+    data={tr_per_cik}
+    title="TR TWRR"
+    value=tr_twrr  
+    fmt='#0.01\%' 
+/>
 
+<BigValue
+    data={tr_per_cik}
+    title='Duration'
+    value=tr_duration_qtr
+    fmt='#0 \Qtr'
+/> 
+
+<BigValue
+    data={tr_per_cik}
+    title='Max Roll Up'
+    value=max_roll_up
+    fmt='#0.01\%'
+    
+/> 
+<BigValue
+    data={tr_per_cik}
+    title='Opportunity Cost'
+    value=opp_cost
+    fmt='#0.01\%'
+    
+/> 
+
+<br>
 <DataTable data={props.entries_tr_per_cik_drilldown.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))}>
 <Column id="quarter"  title='Quarter' sort=true/>
+<Column id="tr_type"  title='TR Type' align="left"/>
+<Column id="value"  title='Total Value' fmt={format_usd} align="left"/>
+<!-- <Column id="tr_value"  title='TR Value' fmt={format_usd}/> -->
+<Column id="tr_shares"  title='TR Shares' align="left" contentType=delta deltaSymbol=false/>
 <Column id="adj_median_sec_price"  title='Price'/>
-<Column id="tr_type"  title='TR Type' alignt="right"/>
-<Column id="tr_shares"  title='TR Shares' align="left"/>
-<!-- <Column id="tr_value"  title='Tr Value' fmt={format_usd}/> -->
-<Column id="value"  title='Total Value' fmt={format_usd}/>
-<Column id="roll_twrr"  title='Rolling TWRR' fmt='#0.01\%'/> 
-<Column id="tr_twrr"  title='TR TWRR' fmt='#0.01\%'/> 
-<Column id="opp_cost"  title='Opp Cost' fmt='#0.01\%'/> 
-<Column id="max_roll_up" title='Max Roll Up' fmt='#0.01\%'/>
+<Column id="roll_twrr"  title='Roll TWRR' fmt='#0.01\%' contentType=delta deltaSymbol=false/> 
 </DataTable>
 
 <!-- {:else} -->

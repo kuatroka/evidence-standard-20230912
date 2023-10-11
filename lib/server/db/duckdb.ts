@@ -33,13 +33,13 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
 
     const overview_per_quarter: Overview_per_quarter[] = await query(sql);
     // db.close()
-    console.log('overview_per_quarter:',overview_per_quarter.slice(0, 1));
+    // console.log('overview_per_quarter:',overview_per_quarter.slice(0, 1));
     return overview_per_quarter as Overview_per_quarter[] ; // Return an object with entries property
     
 };
 
 ///////// Every cik and quarter with parameters /////////
-console.time("get_every_cik_qtr_no_params")
+// console.time("get_every_cik_qtr_no_params")
 export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {    
     const query = (query: string) => {
         return new Promise<Every_cik_qtr[]>((resolve, reject) => {
@@ -63,13 +63,13 @@ export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {
 
 
     const get_every_cik_qtr_no_params: Every_cik_qtr[] = await query(sql);
-    console.log('get_every_cik_qtr_no_params:',get_every_cik_qtr_no_params.slice(0, 1));
+    // console.log('get_every_cik_qtr_no_params:',get_every_cik_qtr_no_params.slice(0, 1));
     // db.close()
     return get_every_cik_qtr_no_params as Every_cik_qtr[]; // Return an object with entries property
 };
-console.timeEnd("get_every_cik_qtr_no_params")
+// console.timeEnd("get_every_cik_qtr_no_params")
 //////////////////////////////////////////////
-console.time("get_every_cik_qtr")
+// console.time("get_every_cik_qtr")
 export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_cik_qtr[]> {    
     const query = (query: string) => {
         return new Promise<Every_cik_qtr[]>((resolve, reject) => {
@@ -94,7 +94,7 @@ export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_c
         value_usd,
         pct_pct
     FROM every_cik_qtr
-    WHERE value_usd > 0 AND cik = '${superinvestor}'`;
+    WHERE cik = '${superinvestor}'`;
 
     // if (superinvestor) {
     //     sql += `
@@ -107,11 +107,11 @@ export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_c
     // db.close()
     return get_every_cik_qtr as Every_cik_qtr[]; // Return an object with entries property
 };
-console.timeEnd("get_every_cik_qtr")
+// console.timeEnd("get_every_cik_qtr")
 
 
 ///////// Every cik, quarter and cusip with parameters /////////
-console.time("get_every_cik_qtr_cusip")
+// console.time("get_every_cik_qtr_cusip")
 export async function get_every_cik_qtr_cusip(superinvestor?: string): Promise<Every_cik_qtr_cusip[]> {
     
     const query = (query: string) => {
@@ -133,16 +133,18 @@ export async function get_every_cik_qtr_cusip(superinvestor?: string): Promise<E
         WHERE cik = '${superinvestor}' `;
     };
 
-
+    sql += `AND value > 0.0`;
+    
     sql += `ORDER BY value DESC`;
 
     const every_cik_qtr_cusip: Every_cik_qtr_cusip[] = await query(sql);
     
     // db.close()
-    console.log('get_every_cik_qtr_cusip:',every_cik_qtr_cusip.slice(0, 1));
+    // console.log('get_every_cik_qtr_cusip:',every_cik_qtr_cusip.slice(0, 1));
+    
     return every_cik_qtr_cusip as Every_cik_qtr_cusip[]; // Return an object with entries property
 };
-console.timeEnd("get_every_cik_qtr_cusip")
+// console.timeEnd("get_every_cik_qtr_cusip")
 
 ///////////
 
@@ -249,8 +251,39 @@ export async function get_tr_per_cik_drilldown(superinvestor?: string, asset?: s
 
 
 
+export async function get_other_cik_per_cusip(asset?: string): Promise<Tr_per_cik[]> {
+    const query = (query: string) => {
+        return new Promise<Tr_per_cik[]>((resolve, reject) => {
+            conn.all(query, (err, res: any) => {
+                if (err) reject(err);
+                resolve(res);
+            })
+        })
+    };
+
+    let sql = `
+    SELECT 
+        cik::string AS cik,
+        ANY_VALUE(cik_name) AS cik_name,
+        '/superinvestors/' || cik::string  || '/${asset}'as link,
+        COUNT(DISTINCT tr_id) AS num_tr_per_cik, 
+        ROUND(AVG(DISTINCT tr_adj_median_sec_pnl_prc),2) AS avg_tr_pnl_per_cik,
+        (SELECT COUNT(DISTINCT tr_id) FROM main.main WHERE cusip = '${asset}') AS total_num_tr,
+        (SELECT COUNT(DISTINCT cik) FROM main.main WHERE cusip = '${asset}') AS total_num_cik,
+    FROM main.main
+    WHERE cusip = '${asset}'
+    GROUP BY 1, 3`;
+
+    const get_other_cik_per_cusip: Tr_per_cik[] = await query(sql);
+    // db.close()
+    return get_other_cik_per_cusip as Tr_per_cik[] ; // Return an object with entries property
+    };
 
 
+    // if (superinvestor && asset) {
+    //     sql += `
+    //     WHERE cik = '${superinvestor}' AND cusip = '${asset}'`;
+    // };
 
 
 
