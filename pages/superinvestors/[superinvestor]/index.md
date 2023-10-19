@@ -1,8 +1,5 @@
 <script>
  /** @type {import('./$types').PageData} */
-import Carousel from 'svelte-carousel'
-import { browser } from '$app/environment';
-import { invalidate } from '$app/navigation';
 
 let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter)).reverse();
 let quarters_carousel = quarters;
@@ -38,7 +35,7 @@ $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_close
 <!-- {quarters} -->
 
 # <span style="color: goldenrod;">{entries_get_every_cik_qtr[0].cik_name}</span>
-## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>**
+## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>** with the Total Cumulative Return of **<span style="color: {entries_get_every_cik_qtr[0].cum_pnl_per_cik_quarter < 0 ? 'red' : 'green'};">{entries_get_every_cik_qtr[0].cum_pnl_per_cik_quarter} %</span>**
 
 <LineChart
 title="Value($)"
@@ -73,7 +70,7 @@ title="Value($)"
 
 <BigValue
     data={entries_get_every_cik_qtr_filtered}
-    title="# of Assets"
+    title="Assets"
     value=num_assets   
     comparison=prc_change_num_assets
     Comparisonfmt='#0.01\%'  
@@ -87,6 +84,16 @@ title="Value($)"
     fmt='#0\%'
     Comparisonfmt='#0.01\%'  
     comparison=roll_mean_cik_qtr_prc_change
+    comparisonTitle="% QoQ"
+/> 
+
+<BigValue
+    data={entries_get_every_cik_qtr_filtered}
+    title="Cumulative TWRR"
+    value=cum_pnl_per_cik_quarter  
+    fmt='#0\%'
+    Comparisonfmt='#0.01\%'  
+    comparison=cum_pnl_per_cik_quarter_prc_change
     comparisonTitle="% QoQ"
 /> 
 
@@ -183,6 +190,12 @@ title="Value($)"
 
 
 
+
+
+
+<!-- import Carousel from 'svelte-carousel'
+import { browser } from '$app/environment';
+import { invalidate } from '$app/navigation'; -->
 
 
 <!-- // func to add and update search params based on the Slider's quarter

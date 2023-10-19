@@ -1,6 +1,9 @@
 <script>
     const total_cik_per_cusip = props.entries_other_cik_per_cusip[0].total_num_cik
-    // const total_tr_per_cusip = props.other_cik_per_cusip[0].total_num_tr
+    const total_tr_per_cusip = props.entries_other_cik_per_cusip[0].total_num_tr
+
+    $: entries_tr_per_cik_drilldown = props.entries_tr_per_cik_drilldown.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))
+    
     let tr_per_cik = props.entries_tr_per_cik;
     const cik_name = props.entries_tr_per_cik.at(0).cik_name
     const name_of_issuer = props.entries_tr_per_cik.at(0).name_of_issuer 
@@ -27,7 +30,7 @@
     <Column id="tr_duration_qtr" title='Duration (Qtr)' align="left"/>
     <Column id="tr_close"  title='Close' align="right"/>
     <!-- <Column id="tr_close_value" title='Exit Value' fmt={format_usd_no_t} align="right"/> -->
-    <Column id="tr_twrr" title='TR TWRR' fmt='#0.01\%'/> 
+    <Column id="tr_twrr" title='TR TWRR' fmt='#0.01\%' contentType=delta deltaSymbol=false/> 
 </DataTable>
 
 
@@ -35,28 +38,28 @@
 # <span style="color: goldenrod;">Transaction **<span style="color: steelblue;"># {tr_per_cik.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))[0].tr_number}</span>** Drill Down</span>
 
 <BigValue
-    data={tr_per_cik}
+    data={entries_tr_per_cik_drilldown}
     title="TR TWRR"
     value=tr_twrr  
     fmt='#0.01\%' 
 />
 
 <BigValue
-    data={tr_per_cik}
+    data={entries_tr_per_cik_drilldown}
     title='Duration'
     value=tr_duration_qtr
     fmt='#0 \Qtr'
 /> 
 
 <BigValue
-    data={tr_per_cik}
+    data={entries_tr_per_cik_drilldown}
     title='Max Roll Up'
     value=max_roll_up
     fmt='#0.01\%'
     
 /> 
 <BigValue
-    data={tr_per_cik}
+    data={entries_tr_per_cik_drilldown}
     title='Opportunity Cost'
     value=opp_cost
     fmt='#0.01\%'
@@ -64,12 +67,13 @@
 /> 
 
 <br>
-<DataTable data={props.entries_tr_per_cik_drilldown.filter(d=>d.tr_id ===   $page.url.searchParams.get('tr_id'))}>
+<DataTable data={entries_tr_per_cik_drilldown}>
 <Column id="quarter"  title='Quarter' sort=true/>
-<Column id="tr_type"  title='TR Type' align="left"/>
 <Column id="value"  title='Total Value' fmt={format_usd} align="left"/>
+<Column id="tr_type"  title='TR Type' align="left"/>
+
 <!-- <Column id="tr_value"  title='TR Value' fmt={format_usd}/> -->
-<Column id="tr_shares"  title='TR Shares' align="left" contentType=delta deltaSymbol=false/>
+<Column id="tr_shares"  title='Shares(Buy/Sell)' align="left" contentType=delta deltaSymbol=false/>
 <Column id="adj_median_sec_price"  title='Price'/>
 <Column id="roll_twrr"  title='Roll TWRR' fmt='#0.01\%' contentType=delta deltaSymbol=false/> 
 </DataTable>
@@ -95,19 +99,19 @@ but it might be just a red herring and something that disctacts me from the core
 quantity of charts...
 focus on what is really needed...* -->
 
-<!-- # <span style="color: goldenrod;">Who else traded in<br>**<span style="color: steelblue;">{name_of_issuer}</span>** 
-### Since 1999  there have been **{total_cik_per_cusip}** superinvestors who traded **{total_tr_per_cusip}** times in {name_of_issuer}
+# <span style="color: goldenrod;">Who else traded in<br>**<span style="color: steelblue;">{name_of_issuer}</span>** 
+### Since **<span style="color: goldenrod">1999</span>**  there have been **<span style="color: goldenrod">{total_cik_per_cusip}</span>** superinvestors who held **<span style="color: goldenrod">{total_tr_per_cusip}</span>** positions in {name_of_issuer}
 
-**TODO**:*1- I need to make the part 'since 1999' dynamic and dependent on the actual data.
+<!-- **TODO**:*1- I need to make the part 'since 1999' dynamic and dependent on the actual data.
 I need to have a real year where trading in this company started for the first time"
 2- Add a column that show the quarter for the earliest trade and current holdings' value*
 
-**TODO**:*Add a slider to select the quarter on which a trade was open and add a search box for Superinvestor * -->
+**TODO**:*Add a slider to select the quarter on which a trade was open and add a search box for Superinvestor* -->
 
-<!-- <DataTable data={props.other_cik_per_cusip} link="link">
+<DataTable data={props.entries_other_cik_per_cusip} link="link">
 <Column id="cik_name"  title='Superinvestor' sort=true/>
-<Column id="num_tr_per_cik"  title='# Tr' />
-<Column id="avg_tr_pnl_per_cik"  title='Avg %P/L' fmt='#0.01\%'/>
-<Column id="link"  />
-</DataTable> -->
+<Column id="num_tr_per_cik"  title='# of Transactions' />
+<Column id="avg_tr_pnl_per_cik"  title='TWRR' fmt='#0.01\%' contentType=delta deltaSymbol=false/>
+<!-- <Column id="link"  /> -->
+</DataTable>
 

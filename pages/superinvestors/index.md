@@ -71,39 +71,40 @@ it needs to be Trillions* -->
             data={get_overview_per_quarter}
             x=quarter_end_date 
             y=total_value_per_quarter_usd
-            yAxisTitle="End Qtr"
+            yAxisTitle="Value($)"
             sort=asc
         />
 
     </Tab>
 
-    <Tab label="# Superinvestors">
+    <Tab label="Superinvestors">
         <BarChart 
         data={get_overview_per_quarter}
         x=quarter_end_date 
         y=num_ciks_per_quarter_num0
-        yAxisTitle="Active Superinvestors During quarter"
+        yAxisTitle="# of Superinvestors"
         />
     </Tab>
 
-        <Tab label="# Assets">
+        <Tab label="Assets">
         <BarChart 
         data={get_overview_per_quarter}
         x=quarter_end_date 
         y=num_cusip_per_quarter_num0
         fmt= '#,##0'
-        yAxisTitle="# of Traded Assets"
+        yAxisTitle="# of Assets"
         />
     </Tab>
         <Tab label="Table">
         <DataTable data="{get_overview_per_quarter}" search="true">
             <Column id="quarter" title='Quarter'/>
-            <Column id="total_value_per_quarter_usd" title='Value'/>
-            <Column id="prc_change_total_value" contentType=delta fmt='#0.01\%' title="Value(Chg)"/>
-            <Column id="num_ciks_per_quarter_num0" title='Superinvestors'/>
-            <Column id="prc_change_cik" contentType=delta fmt='#0.01\%' title="Superinvestors(Chg)"/>
-            <Column id="num_cusip_per_quarter_num0" title='Assets'/>
-            <Column id="prc_change_cusip" contentType=delta fmt='#0.01\%' title="Assets(Chg)"/>
+            <Column id="num_ciks_per_quarter_num0" title='Superinvestors' align='right'/>
+            <Column id="prc_change_cik" contentType=delta fmt='#0.01\%' title="(Chg)" align='left'/>
+            <Column id="total_value_per_quarter_usd" title='Value' align='right'/>
+            <Column id="prc_change_total_value" contentType=delta fmt='#0.01\%' title="(Chg)" align='left'/>
+
+            <Column id="num_cusip_per_quarter_num0" title='Assets' align='right'/>
+            <Column id="prc_change_cusip" contentType=delta fmt='#0.01\%' title="(Chg)" align='left'/>
             
         </DataTable>
 
@@ -191,7 +192,7 @@ selecting values on slider the results ignore the search term*  -->
     </Tab>
 
 
-<Tab label="Chart">
+<Tab label="Treemap">
 
 <ECharts config={
     {

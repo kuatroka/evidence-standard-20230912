@@ -88,6 +88,8 @@ export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_c
         quarter_end_date,
         roll_mean_cik_qtr_adj_median_sec_pnl_prc,
         roll_mean_cik_qtr_prc_change,
+        cum_pnl_per_cik_quarter,
+        cum_pnl_per_cik_quarter_prc_change,
         prc_change_value,
         prc_change_num_assets,
         num_assets,
