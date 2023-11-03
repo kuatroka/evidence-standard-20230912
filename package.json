@@ -18,6 +18,7 @@
     "@evidence-dev/evidence": "^22.0.0",
     "@evidence-dev/preprocess": "3.1.0",
     "better-sqlite3": "^8.6.0",
+    "duckdb": "0.9.1",
     "duckdb-wasm-kit": "^0.1.16",
     "nodejs-polars": "^0.8.2",
     "resize-observer": "^1.0.4",

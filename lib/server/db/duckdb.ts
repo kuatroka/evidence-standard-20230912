@@ -19,16 +19,8 @@ export async function get_overview_per_quarter(): Promise<Overview_per_quarter[]
             })
         })
     };
-    let sql = `SELECT DISTINCT *
-    FROM main.overview_per_quarter AS a
-    LEFT JOIN 
-    (SELECT quarter, 
-        any_value(roll_mean_all_cik_qtr_adj_median_sec_pnl_prc) AS TWRR ,
-        any_value(roll_mean_all_cik_qtr_prc_change) AS TWRR_prc_change
-    FROM main.every_cik_qtr
-    GROUP BY quarter) AS b
-    ON a.quarter = b.quarter
-    order by a.quarter desc`; // Use template literals correctly
+    let sql = `SELECT *
+    FROM overview_per_quarter_twrr`; // Use template literals correctly
 
 
     const overview_per_quarter: Overview_per_quarter[] = await query(sql);
@@ -52,14 +44,16 @@ export async function get_every_cik_qtr_no_params(): Promise<Every_cik_qtr[]> {
 
     let sql = `
     SELECT 
-        cik,
-        cik_name,
-        quarter,
-        roll_mean_cik_qtr_adj_median_sec_pnl_prc,
-        num_assets,
-        value_usd,
-        pct_pct
-    FROM every_cik_qtr`;
+        a.cik AS cik,
+        b.cik_name AS cik_name,
+        a.quarter AS quarter,
+        a.roll_mean_cik_qtr_cons_price_twrr AS roll_mean_cik_qtr_cons_price_twrr,
+        a.num_assets AS num_assets, 
+        a.value_usd AS value_usd,
+        a.pct_pct AS pct_pct
+    FROM every_cik_qtr a
+    LEFT JOIN cik_md b
+    ON a.cik = b.cik`;
 
 
     const get_every_cik_qtr_no_params: Every_cik_qtr[] = await query(sql);
@@ -82,21 +76,23 @@ export async function get_every_cik_qtr(superinvestor?: string): Promise<Every_c
 
     let sql = `
     SELECT 
-        cik,
-        cik_name,
-        quarter,
-        quarter_end_date,
-        roll_mean_cik_qtr_adj_median_sec_pnl_prc,
-        roll_mean_cik_qtr_prc_change,
-        cum_pnl_per_cik_quarter,
-        cum_pnl_per_cik_quarter_prc_change,
-        prc_change_value,
-        prc_change_num_assets,
-        num_assets,
-        value_usd,
-        pct_pct
-    FROM every_cik_qtr
-    WHERE cik = '${superinvestor}'`;
+        a.cik AS cik,
+        b.cik_name AS cik_name,
+        a.quarter AS quarter,
+        a.quarter_end_date AS quarter_end_date,
+        a.roll_mean_cik_qtr_cons_price_twrr AS roll_mean_cik_qtr_cons_price_twrr,
+        a.roll_mean_cik_qtr_prc_change AS roll_mean_cik_qtr_prc_change,
+        a.cum_pnl_per_cik_quarter AS cum_pnl_per_cik_quarter,
+        a.cum_pnl_per_cik_quarter_prc_change AS cum_pnl_per_cik_quarter_prc_change,
+        a.prc_change_value AS prc_change_value,
+        a.prc_change_num_assets AS prc_change_num_assets,
+        a.num_assets AS num_assets,
+        a.value_usd AS value_usd,
+        a.pct_pct AS pct_pct
+    FROM every_cik_qtr a
+    LEFT JOIN cik_md b
+    ON a.cik = b.cik
+    WHERE a.cik = '${superinvestor}'`;
 
     // if (superinvestor) {
     //     sql += `

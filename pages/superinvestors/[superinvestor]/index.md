@@ -1,32 +1,32 @@
 <script>
  /** @type {import('./$types').PageData} */
 
-let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter)).reverse();
-let quarters_carousel = quarters;
+// let quarters = props.entries_get_every_cik_qtr.map(item => (item.quarter)).reverse();
+// let quarters_carousel = quarters;
 
-let years_active = quarters.length/4;
-let sliderValue = quarters.length -1;
-$: inputYearQuater = quarters[sliderValue];
+// let years_active = quarters.length/4;
+// let sliderValue = quarters.length -1;
+// $: inputYearQuater = quarters[sliderValue];
 
 // ##### Data for the main overview Line Chart
-let entries_get_every_cik_qtr = props.entries_get_every_cik_qtr;
+// let entries_get_every_cik_qtr = props.entries_get_every_cik_qtr;
 
 // ##### Data for the dynamicly filtered Big Value components
-$: entries_get_every_cik_qtr_filtered = props.entries_get_every_cik_qtr.filter(d => d.quarter === inputYearQuater);
-// $: prev_quarter = entries_get_every_cik_qtr_filtered[0].prev_quarter;
+// $: entries_get_every_cik_qtr_filtered = props.entries_get_every_cik_qtr.filter(d => d.quarter === inputYearQuater);
+// // $: prev_quarter = entries_get_every_cik_qtr_filtered[0].prev_quarter;
 
 // ##### Data for the dynamicly filtered DataTable and Treemap components
-$: entries_get_every_cik_qtr_cusip_filtered = props.entries_get_every_cik_qtr_cusip.filter(d => d.quarter === inputYearQuater);
+// $: entries_get_every_cik_qtr_cusip_filtered = props.entries_get_every_cik_qtr_cusip.filter(d => d.quarter === inputYearQuater);
 
 // ###### formatting of numbers, currency, percentages
-const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'
-const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
-// ########################################################################
-let quarters3 = props.entries_get_overview_tr_closed.map(item => (item.quarter)).reverse();
+// const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'
+// const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
+// // ########################################################################
+// let quarters3 = props.entries_get_overview_tr_closed.map(item => (item.quarter)).reverse();
 
-let sliderValue3 = quarters3.length -1;
-$: inputYearQuater3 = quarters3[sliderValue3];
-$: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_closed.filter(d => d.quarter === inputYearQuater3);
+// let sliderValue3 = quarters3.length -1;
+// $: inputYearQuater3 = quarters3[sliderValue3];
+// $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_closed.filter(d => d.quarter === inputYearQuater3);
 
 
 
@@ -34,20 +34,20 @@ $: entries_get_overview_tr_closed_filtered = props.entries_get_overview_tr_close
 </script>
 <!-- {quarters} -->
 
-# <span style="color: goldenrod;">{entries_get_every_cik_qtr[0].cik_name}</span>
-## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>** with the Total Cumulative Return of **<span style="color: {entries_get_every_cik_qtr[0].cum_pnl_per_cik_quarter < 0 ? 'red' : 'green'};">{entries_get_every_cik_qtr[0].cum_pnl_per_cik_quarter} %</span>**
+<!-- # <span style="color: goldenrod;">{entries_get_every_cik_qtr[0].cik_name}</span>
+## Active for **<span style="color: steelblue;">{years_active}</span>** years since **<span style="color: steelblue;">{quarters[0]}</span>** with the Total Cumulative Return of **<span style="color: {entries_get_every_cik_qtr[0].cum_pnl_per_cik_quarter < 0 ? 'red' : 'green'};">{entries_get_every_cik_qtr[0].cum_pnl_per_cik_quarter} %</span>** -->
 
-<LineChart
+<!-- <LineChart
 title="Value($)"
     data={entries_get_every_cik_qtr}
     x=quarter_end_date
     y=value_usd fmt={format_usd}
     yFmt={format_usd}>
 </LineChart>
-<hr>
+<hr> -->
 
-## **<span style="color: steelblue;">Assets On</span>**: **<span style="color: goldenrod;">{inputYearQuater}</span>**
-<Slider bind:quarters={quarters} bind:quarterValue={sliderValue} />
+<!-- ## **<span style="color: steelblue;">Assets On</span>**: **<span style="color: goldenrod;">{inputYearQuater}</span>**
+<Slider bind:quarters={quarters} bind:quarterValue={sliderValue} /> -->
 
 <!-- **TODO**:*Play with the color of the slider rail and the trail. Try the same color as the lineChart*
 
@@ -58,7 +58,7 @@ title="Value($)"
 
 
     <!-- comparisonTitle="% Over {prev_quarter}" -->
-<BigValue
+<!-- <BigValue
     data={entries_get_every_cik_qtr_filtered}
     title="Value"
     value=value_usd  
@@ -66,9 +66,9 @@ title="Value($)"
     comparison=prc_change_value
     Comparisonfmt='#0.01\%'  
     comparisonTitle="% QoQ"
-/>
+/> -->
 
-<BigValue
+<!-- <BigValue
     data={entries_get_every_cik_qtr_filtered}
     title="Assets"
     value=num_assets   
@@ -85,9 +85,9 @@ title="Value($)"
     Comparisonfmt='#0.01\%'  
     comparison=roll_mean_cik_qtr_prc_change
     comparisonTitle="% QoQ"
-/> 
+/>  -->
 
-<BigValue
+<!-- <BigValue
     data={entries_get_every_cik_qtr_filtered}
     title="Cumulative TWRR"
     value=cum_pnl_per_cik_quarter  
@@ -95,26 +95,24 @@ title="Value($)"
     Comparisonfmt='#0.01\%'  
     comparison=cum_pnl_per_cik_quarter_prc_change
     comparisonTitle="% QoQ"
-/> 
+/>  -->
 
 
 <Tabs>
 <Tab label="Table">
-<DataTable data="{entries_get_every_cik_qtr_cusip_filtered}" link="cusip" search="true" rows=9>
-    <Column id="name_of_issuer"  title='Asset' />
-    <Column id="value" fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'} lign="right"/>
-    <Column id="prc_change_value" contentType=delta fmt='#0.01\%' title="Value(QoQ)" lign="left"/>
+<!-- <DataTable data="{entries_get_every_cik_qtr_cusip_filtered}" link="cusip" search="true" rows=9> -->
+    <!-- <Column id="name_of_issuer"  title='Asset' /> -->
+    <!-- <Column id="value" fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0k'} lign="right"/> -->
+    <!-- <Column id="prc_change_value" contentType=delta fmt='#0.01\%' title="Value(QoQ)" lign="left"/> -->
     <!-- <Column id="prc_change_shares" contentType=delta fmt='#0.01\%' title="Shares(QoQ)"/> -->
-    <Column id="cusip_weight" title='Weight' fmt='#0.01\%' />
-    <Column id="rolling_twrr" title='Asset TWRR' contentType=delta deltaSymbol=false fmt='#0.01\%' /> 
-
-    
-</DataTable>
+    <!-- <Column id="cusip_weight" title='Weight' fmt='#0.01\%' />
+    <Column id="rolling_twrr" title='Asset TWRR' contentType=delta deltaSymbol=false fmt='#0.01\%' />     
+</DataTable> -->
 </Tab>
 
 <Tab label="Chart">
 
-<ECharts config={
+<!-- <ECharts config={
     {title: {
             text: 'Value by Asset',
             left: 'center'},
@@ -141,7 +139,7 @@ title="Value($)"
             type: 'treemap',
             data: entries_get_every_cik_qtr_cusip_filtered.map(item => ({
                     value: item.value,
-                    name: item.name_of_issuer,
+                    name: item.cusip,
                     cusip_weight: item.cusip_weight
                 })),
             label: {
@@ -164,7 +162,7 @@ title="Value($)"
         }
         ]
     }
-}/>
+}/> -->
 </Tab>
 </Tabs>
 

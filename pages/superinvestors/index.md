@@ -19,7 +19,7 @@ const format_usd = '[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B
 const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k'
 
 </script>
-
+{get_overview_per_quarter_filtered[0].quarter}
 
 <!-- {JSON.stringify(props.entries_get_overview_per_quarter[0].quarter,  null, 2)}  -->
 <div style="display: flex; justify-content: center;">
@@ -44,8 +44,7 @@ const format_shares = '[>=1000000000]#,##0.0,,,"B";[>=1000000]#,##0.0,"M";#,##0k
 <BigValue
     data={get_overview_per_quarter}
     title="All Superinvestors"
-    value=total_ciks_num0
-    
+    value=total_ciks_num0    
 />
 
 <BigValue
@@ -157,9 +156,9 @@ it needs to be Trillions* -->
 <BigValue
     data={get_overview_per_quarter_filtered}
     title="TWRR"
-    value=TWRR  
+    value=mean_twrr_all_cik_quarter  
     fmt='#0.01\%'  
-    comparison=TWRR_prc_change
+    comparison=mean_twrr_all_cik_quarter_pct_chg
     comparisonTitle="% QoQ"
     maxWidth='10em'
 />
@@ -174,9 +173,9 @@ it needs to be Trillions* -->
 **TODO**:*The search box is not synchronised with the slider. When inputting search term and 
 selecting values on slider the results ignore the search term*  -->
 
-<!-- {#await props.streamed.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater)}
+{#await props.streamed.entries_every_cik_qtr.filter(item => item.quarter === inputYearQuater)}
     <p>loading...</p>
-{:then data} -->
+{:then data}
 
 <Tabs>
 
@@ -186,7 +185,7 @@ selecting values on slider the results ignore the search term*  -->
             <Column id="num_assets" title='Assets'/>
             <Column id="value_usd" title='Value' fmt={'[>=1000000000000]$#,##0.0,,,,"T";[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";[>=1000]$#,##0k'}/>
             <Column id="pct_pct" title='Weight' fmt='#0.01\%'/>
-            <Column id="roll_mean_cik_qtr_adj_median_sec_pnl_prc" title='TWRR' contentType=delta fmt='#0.01\%'/>
+            <Column id="roll_mean_cik_qtr_cons_price_twrr" title='TWRR' contentType=delta fmt='#0.01\%'/>  -->
             <!-- <Column id="roll_mean_cik_qtr_prc_change" contentType=delta fmt='#0.01\%' title="TWRR Chg"/> -->
         </DataTable>
     </Tab>
@@ -251,7 +250,7 @@ selecting values on slider the results ignore the search term*  -->
 <!-- **TODO**:*By dedault, under the chart, the title shows some arbitrary tile's name* -->
     </Tab>
 </Tabs>
-<!-- {/await} -->
+{/await}
 
 
 <!-- **TODO**:*I'd like to make the Racing Bar chart work*
